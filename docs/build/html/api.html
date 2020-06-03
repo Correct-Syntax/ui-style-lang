@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>UI Style Lang API &mdash; UI Style Lang 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to UI Style Lang’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> UI Style Lang
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">UI Style Lang API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#style-sheet-api">Style Sheet API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#style-sheet-example">Style Sheet Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#style-sheet-properties">Style Sheet Properties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#python-api">Python API</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">UI Style Lang</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>UI Style Lang API</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="ui-style-lang-api">
+<h1>UI Style Lang API<a class="headerlink" href="#ui-style-lang-api" title="Permalink to this headline">¶</a></h1>
+<p>UI Style Lang is a simple CSS-like language which allows for drawing and styling wxPython elements. Many UI Style Lang properties are the same as the normal (not short-hand) CSS3 properties. This provides a familiar syntax, especially for those with experience with CSS3.</p>
+<div class="section" id="style-sheet-api">
+<h2>Style Sheet API<a class="headerlink" href="#style-sheet-api" title="Permalink to this headline">¶</a></h2>
+<p>The UI Style Lang language is declared in a .uiss or .css file. It has a simple, CSS3-like syntax and an id based structure.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It should be noted that not all of the properties supported in the drawing API are supported by the API for styling elements. Thus, the drawing API is much more powerful (at the moment, at least) and the usage will differ greatly.</p>
+</div>
+<div class="section" id="style-sheet-example">
+<h3>Style Sheet Example<a class="headerlink" href="#style-sheet-example" title="Permalink to this headline">¶</a></h3>
+<p>Below is a minimal example of the UI Style Lang language declaring a 200 x 200px rectangle with a 2px grey border and red background placed at 400, 500 on the window.</p>
+<div class="highlight-css notranslate"><div class="highlight"><pre><span></span><span class="p">@</span><span class="k">style</span> <span class="nt">rect-example</span> <span class="p">{</span>
+   <span class="nt">width</span><span class="o">:</span> <span class="nt">200px</span><span class="o">;</span>
+   <span class="nt">height</span><span class="o">:</span> <span class="nt">200px</span><span class="o">;</span>
+   <span class="nt">top</span><span class="o">:</span> <span class="nt">500px</span><span class="o">;</span>
+   <span class="nt">left</span><span class="o">:</span> <span class="nt">400px</span><span class="o">;</span>
+   <span class="nt">border-color</span><span class="o">:</span> <span class="nt">grey</span><span class="o">;</span>
+   <span class="nt">border-width</span><span class="o">:</span> <span class="nt">2px</span><span class="o">;</span>
+   <span class="nt">background-color</span><span class="o">:</span> <span class="nt">red</span><span class="o">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="style-sheet-properties">
+<h3>Style Sheet Properties<a class="headerlink" href="#style-sheet-properties" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt>
+<code class="sig-name descname">font-weight</code></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Normal</dt>
+<dd class="field-odd"><p>normal font weight</p>
+</dd>
+<dt class="field-even">Bold</dt>
+<dd class="field-even"><p>bold font weight</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="python-api">
+<h2>Python API<a class="headerlink" href="#python-api" title="Permalink to this headline">¶</a></h2>
+<p>The “HTML equivelent” in UI Style Lang is the Python method API. The HTML + CSS feel is most pronounced in the <code class="docutils literal notranslate"><span class="pre">UIStyleDC</span></code> drawing API.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">UIStyleDC</span></code> class is an enhanced wrapper for the <code class="docutils literal notranslate"><span class="pre">wx.adv.PseudoDC</span></code>. The normal methods from the <code class="docutils literal notranslate"><span class="pre">PseudoDC</span></code> are still accessible from <code class="docutils literal notranslate"><span class="pre">UIStyleDC</span></code>.</p>
+<dl class="class">
+<dt id="UIStyleDC">
+<em class="property">class </em><code class="sig-name descname">UIStyleDC</code><span class="sig-paren">(</span><em class="sig-param">parent</em>, <em class="sig-param">file</em><span class="sig-paren">)</span><a class="headerlink" href="#UIStyleDC" title="Permalink to this definition">¶</a></dt>
+<dd><p>initilizes the DC and styles</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> – an instance of <code class="docutils literal notranslate"><span class="pre">wx.Frame</span></code></p></li>
+<li><p><strong>file</strong> – path to the stylesheet with intial styles declared (supports a .uiss or .css file)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="UIStyleDC.DrawShapeStyles">
+<code class="sig-name descname">DrawShapeStyles</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#UIStyleDC.DrawShapeStyles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws the shape with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: <code class="docutils literal notranslate"><span class="pre">&lt;div</span> <span class="pre">class=&quot;{{id}}&quot;&gt;&lt;/div&gt;</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>str</em>) – Id of the element to be drawn declared in the initial stylesheet</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to UI Style Lang’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Noah Rahm, Correct Syntax
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
