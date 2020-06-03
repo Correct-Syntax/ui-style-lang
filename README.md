@@ -10,8 +10,9 @@ Only part of the drawing API is implemented right now. Image and SVG support are
 # Features
 
 * Written in pure Python with minimal dependancies (just wxPython and the standard library)
-* Over 15 CSS properties already supported
+* Over 12 CSS properties already supported
 * Draw circles, rectangles, squares, & text with the drawing API
+* Inline and stylesheet styles are supported
 
 # Development 
 
