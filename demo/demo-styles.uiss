@@ -1,0 +1,30 @@
+
+
+@style rect {
+  border-width: 1.12px;
+  border-color: blue;
+  border-radius: 100px;
+  top: 20px;
+  left: 20px;
+  width: 200px;
+  height: 200px;
+  background-color: #C7C729;
+}
+
+@style grey-box {
+  border-color: grey;
+  background-color: white;
+	width: 300px;
+	height: 200px;
+  top: 400px;
+  left: 300px;
+}
+
+@style black-text {
+  color: grey;
+  background: red;
+  top: 400px;
+  left: 300px;
+  font-weight: bold;
+  font-style: italic;
+}
