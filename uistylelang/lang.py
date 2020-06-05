@@ -28,7 +28,6 @@
 import re
 
 
-
 class UIStyleLangParser(object):
     def __init__(self, uislang_str):
         self.uistylelang_str = uislang_str
@@ -84,7 +83,7 @@ class UIStyleLangParser(object):
             elif kind == "MISMATCH":
                 raise RuntimeError(f'{value!r} unexpected on line {line_num}')
 
-
+            
             if kind == "ID":
                 # Get the id
                 style_id = value[7:][:-2]
@@ -166,6 +165,25 @@ class UIStyleLangParser(object):
         return parsed_data
 
 
+    def clean_property(self, uiss_prop):
+        """ Cleans the given UI Style Lang property and 
+        converts it to the best type.
+        """
+        if uiss_prop == type(int):
+            cleaned_uiss_prop = uiss_prop
+        elif uiss_prop.endswith("px"):
+            # Remove the "px" on the end and 
+            # convert to the proper type.
+            if "." in uiss_prop:
+                cleaned_uiss_prop = float(uiss_prop[:-2])
+            else:
+                cleaned_uiss_prop = int(uiss_prop[:-2])
+        else:
+            cleaned_uiss_prop = uiss_prop
+
+        return cleaned_uiss_prop
+
+
 
 
 
@@ -178,7 +196,6 @@ if __name__ == "__main__":
     }
 
     """
-
     parser = UIStyleLangParser(string)
     parsed_str = parser.parse()
     print(parsed_str)
