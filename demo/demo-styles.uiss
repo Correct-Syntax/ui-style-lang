@@ -21,10 +21,17 @@
 }
 
 @style black-text {
+  type: text;
   color: grey;
   background: red;
   top: 400px;
   left: 300px;
-  font-weight: bold;
+  font-weight: normal;
   font-style: italic;
+}
+
+@style icon {
+  type: image;
+  top: 400px;
+  left: 300px;
 }

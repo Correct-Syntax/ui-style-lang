@@ -80,15 +80,15 @@ class MainApplication(wx.Frame):
         
         self._pdc.UpdateShapeStyles('grey-box', styles=styles)
 
-        self._pdc.UpdateTextStyles('black-text', styles="color: red;")
+        self._pdc.UpdateTextStyles('black-text', styles="color: red; text-decoration: underline; font-size: larger; font-style: italic; font-weight: bold;")
         self.RefreshDemo()
 
     def DrawDrawing(self, dc):
 
         # Initial
-        dc.DrawShapeStyles('grey-box')
-        dc.DrawShapeStyles('rect')
-        dc.DrawTextStyles('black-text', text="UI Style Lang Demo")
+        dc.InitShapeStyles('grey-box')
+        dc.InitShapeStyles('rect')
+        dc.InitTextStyles('black-text', text="UI Style Lang Demo")
 
         # Change styles
         dc.UpdateShapeStyles('rect', styles="border-color: blue; border-width: 3px;")
