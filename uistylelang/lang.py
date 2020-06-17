@@ -51,8 +51,8 @@ class UIStyleLangParser(object):
 
         token_specification = [
             ('ID', r'@style [A-Za-z\-]+ {'), # Identifiers
-            ('PROPERTY', r'[A-Za-z0-9\-]+'), # CSS properties
-            ('VALUE', r': [A-Za-z0-9#\.]+;'), # CSS property values
+            ('PROPERTY', r'[A-Za-z0-9\-]+'), # Properties
+            ('VALUE', r': [A-Za-z0-9#\.]+;'), # Property values
             ('END', r'}'), # Statement terminator
             ('NEWLINE', r'\n'), # Line endings
             ('SKIP', r'[ \t]+'), # Skip over spaces and tabs
@@ -122,7 +122,7 @@ class UIStyleLangParser(object):
 
         token_specification = [
             ('PROPERTY', r'[A-Za-z0-9\-]+'), # CSS properties
-            ('VALUE', r': [A-Za-z0-9#\.]+;'), # CSS property values
+            ('VALUE', r': [A-Za-z0-9#\.\-]+;'), # CSS property values
             ('NEWLINE', r'\n'), # Line endings
             ('SKIP', r'[ \t]+'), # Skip over spaces and tabs
             ('MISMATCH', r'.'), # Any other (invalid) character
@@ -178,6 +178,12 @@ class UIStyleLangParser(object):
                 cleaned_uiss_prop = float(uiss_prop[:-2])
             else:
                 cleaned_uiss_prop = int(uiss_prop[:-2])
+
+        elif uiss_prop.endswith("deg"):
+            # Remove the "deg" on the end and 
+            # convert to the proper type.
+            cleaned_uiss_prop = float(uiss_prop[:-3]) # Must be a float!
+
         else:
             cleaned_uiss_prop = uiss_prop
 

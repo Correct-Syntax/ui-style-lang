@@ -38,6 +38,7 @@ import wx.adv
 from .lang import UIStyleLangParser
 
 
+# Note: "type" gets set on runtime; no need to put it in here
 DEFAULT_PROPERTIES = {
     "color": "transparent",
     "background": "transparent",
@@ -53,10 +54,14 @@ DEFAULT_PROPERTIES = {
     "font-weight": "normal",
     "font-style": "normal",
     "text-decoration": "none",
+    "transform-rotate": "0deg",
+    "text-transform": "none",
 }
 
 
+
 class ShapeID(object):
+    """ Represents a shape element. """
     def __init__(self, _id):
         self.uisl_id = _id
         self.wx_id = wx.NewIdRef()
@@ -69,6 +74,7 @@ class ShapeID(object):
 
 
 class TextID(object):
+    """ Represents a text element. """
     def __init__(self, _id, text="default"):
         self.uisl_id = _id
         self.wx_id = wx.NewIdRef()
@@ -88,6 +94,7 @@ class TextID(object):
 
 
 class ImageID(object):
+    """ Represents an image element. """
     def __init__(self, _id, path=""):
         self.uisl_id = _id
         self.wx_id = wx.NewIdRef()
@@ -151,6 +158,11 @@ class UIStylePDC(wx.adv.PseudoDC):
             self.current_styles[obj.GetWxId()] = DEFAULT_PROPERTIES
 
     def _MergeParsedStyles(self, _id, styles):
+        """ Merge new styles and the current styles dicts.
+        
+        :param str _id: element id to merge styles for
+        :param str styles: new styles to merge with the current styles
+        """
         # Make a copy so that we don't overwrite
         styles_dict = copy.copy(self.current_styles[_id])
 
@@ -183,6 +195,23 @@ class UIStylePDC(wx.adv.PseudoDC):
     def GetLangParser(self):
         return self.lang_parser
 
+    def GetWXId(id_, style_type="shape"):
+        """ Returns the assigned wxPython id of the element. Useful for 
+        situations when you need to mess with the wxPython ids yourself.
+
+        :param str _id: id to of the element (must be already declared in 
+        the intial stylesheet)
+        :param str style_type: type of the element - can be one of: text, image, shape
+        """
+        if style_type == "text":
+            id_obj = self.sdc_text_style_ids[_id]
+        elif style_type == "image":
+            id_obj = self.sdc_image_style_ids[_id]
+        else:
+            id_obj = self.sdc_shape_style_ids[_id]
+
+        return id_obj.GetWxId()
+
     @property
     def ParsedStyles(self):
         styles = self.lang_parser.parse()
@@ -193,27 +222,46 @@ class UIStylePDC(wx.adv.PseudoDC):
 
 
     def InitShapeStyles(self, _id):
-        """ Draws the shape with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: *<div class="{{_id}}"></div>*
+        """ Draws the shape with the same id declared in the 
+        stylesheet. This can be thought of like the following 
+        pseudo-HTML: *<div class="{{_id}}"></div>*
 
-        :param str _id: id to draw (must be already declared in the intial stylesheet)
+        :param str _id: id to draw (must be already declared in 
+        the intial stylesheet)
         """
         styles = self.ParsedStyles[_id]
         style_id_obj = self.sdc_shape_style_ids[_id]
         self.UpdateShape(style_id_obj.GetWxId(), styles)
-        #print('-> DrawShape')
 
 
     def InitTextStyles(self, _id, text=""):
-        """ Draws the text with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: *<p class="{{_id}}">{{text}}</p>*
+        """ Draws the text with the same id declared in the 
+        stylesheet. This can be thought of like the following 
+        pseudo-HTML: *<p class="{{_id}}">{{text}}</p>*
 
-        :param str _id: id to draw (must be already declared in the intial stylesheet)
+        :param str _id: id to draw (must be already declared in 
+        the intial stylesheet)
         :param str text: text to be drawn and displayed
         """
         styles = self.ParsedStyles[_id]
         style_id_obj = self.sdc_text_style_ids[_id]
         style_id_obj.SetText(text)
         self.UpdateText(style_id_obj.GetWxId(), text, styles)
-        #print('-> DrawText')
+
+
+    def InitImageStyles(self, _id, img_path=""):
+        """ Draws the image with the same id declared in the 
+        stylesheet. This can be thought of like the following 
+        pseudo-HTML: *<img class="{{_id}}" src="{{img_path}}">*
+
+        :param str _id: id to draw (must be already declared in 
+        the intial stylesheet)
+        :param str img_path: path of the image to be drawn and displayed
+        """
+        styles = self.ParsedStyles[_id]
+        style_id_obj = self.sdc_image_style_ids[_id]
+        style_id_obj.SetPath(img_path)
+        self.UpdateImage(style_id_obj.GetWxId(), img_path, styles)
 
 
     def UpdateShape(self, _id, styles):
@@ -245,7 +293,9 @@ class UIStylePDC(wx.adv.PseudoDC):
                 half = uiss_width/2
                 self.DrawCircle(uiss_top+half, uiss_left+half, uiss_border_radius)
             else:
-                self.DrawRoundedRectangle(uiss_top, uiss_left, uiss_width, uiss_height, uiss_border_radius)
+                self.DrawRoundedRectangle(
+                    uiss_top, uiss_left, uiss_width, uiss_height, uiss_border_radius
+                    )
 
         else:
             self.DrawRectangle(uiss_top, uiss_left, uiss_width, uiss_height)
@@ -269,6 +319,10 @@ class UIStylePDC(wx.adv.PseudoDC):
         uiss_font_weight = self.CleanProperty(styles_dict["font-weight"]) 
         uiss_font_style = self.CleanProperty(styles_dict["font-style"]) 
         uiss_font_size = self.CleanProperty(styles_dict["font-size"])
+
+        uiss_transform_rotate = self.CleanProperty(styles_dict["transform-rotate"])
+        uiss_text_transform = self.CleanProperty(styles_dict["text-transform"]) 
+
 
         # Use styles
         fnt = self.parent_window.GetFont()
@@ -328,11 +382,66 @@ class UIStylePDC(wx.adv.PseudoDC):
         self.SetFont(fnt)
         self.SetTextForeground(wx.Colour(uiss_color))
         self.SetTextBackground(wx.Colour(uiss_background))
-        self.DrawText(text, uiss_top, uiss_left)
+
+        # Text transform
+        if uiss_text_transform == "none":
+            text = text # Do nothing
+
+        if uiss_text_transform == "lowercase":
+            text = text.lower()
+
+        elif uiss_text_transform == "uppercase":
+            text = text.upper()
+
+        elif uiss_text_transform == "capitalize":
+            text = text.capitalize()
+
+        if uiss_transform_rotate == 0:
+            self.DrawText(text, uiss_top, uiss_left)
+        else:
+            self.DrawRotatedText(text, uiss_top, uiss_left, uiss_transform_rotate)
+            
+
+
+    def UpdateImage(self, _id, img_path, styles):
+        self.ClearId(_id)
+        self.SetId(_id)
+
+        styles_dict = self._MergeParsedStyles(_id, styles)
+
+        # Define styles 
+        uiss_top = self.CleanProperty(styles_dict["top"]) 
+        uiss_left = self.CleanProperty(styles_dict["left"]) 
+        uiss_width = self.CleanProperty(styles_dict["width"]) 
+        uiss_height = self.CleanProperty(styles_dict["height"]) 
+
+        uiss_transform_rotate = self.CleanProperty(styles_dict["transform-rotate"])
+
+        # Use styles
+        image = wx.Image(img_path)
+
+        #if uiss_height != 0 and uiss_width != 0:
+        #img_center = wx.Point(uiss_left+(image.GetWidth()/2), uiss_top+(image.GetHeight()/2))
+        #print(img_center)
+
+        if uiss_transform_rotate > 0:
+            #print(uiss_transform_rotate)
+
+            # There could be a bug with this code since it doesn't seem to have
+            # the correct rotation all the time.
+            image = wx.Image.Rotate(
+                image, uiss_transform_rotate, wx.Point(uiss_top, uiss_left)
+                )
+
+        bitmap = wx.Image.ConvertToBitmap(image)
+
+        self.DrawBitmap(bitmap, uiss_top, uiss_left, True)
 
 
     def UpdateShapeStyles(self, _id, styles=""):
-        """ Updates and draws the shape with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: *<div class="{{_id}}" style="{{styles}}"></div>*
+        """ Updates and draws the shape with the same id 
+        declared in the stylesheet. This can be thought of like the 
+        following pseudo-HTML: *<div class="{{_id}}" style="{{styles}}"></div>*
 
         :param str _id: id to draw (must be already declared in the intial stylesheet)
         :param str styles: inline styles to update and override style properties of the shape
@@ -344,9 +453,12 @@ class UIStylePDC(wx.adv.PseudoDC):
 
 
     def UpdateTextStyles(self, _id, text="", styles=""):
-        """ Updates and draws the text with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: *<p class="{{_id}}" style="{{styles}}">{{text}}</p>*
+        """ Updates and draws the text with the same id declared 
+        in the stylesheet. This can be thought of like the following 
+        pseudo-HTML: *<p class="{{_id}}" style="{{styles}}">{{text}}</p>*
 
-        :param str _id: id to draw (must be already declared in the intial stylesheet)
+        :param str _id: id to draw (must be already declared in the 
+        intial stylesheet)
         :param str text: update and override the text to be drawn and displayed
         :param str styles: inline styles to update and override style properties of the text
         """
@@ -360,3 +472,24 @@ class UIStylePDC(wx.adv.PseudoDC):
             style_id_obj.SetText(text)
             
         self.UpdateText(style_id_obj.GetWxId(), text, uiss_style)
+
+
+    def UpdateImageStyles(self, _id, img_path="", styles=""):
+        """ Updates and draws the image with the same id declared in the 
+        stylesheet. This can be thought of like the following 
+        pseudo-HTML: *<img class="{{_id}}" src="{{img_path}}" style="{{styles}}">*
+
+        :param str _id: id to draw (must be already declared in the intial stylesheet)
+        :param str img_path: update and override the image path to be drawn and displayed
+        :param str styles: inline styles to update and override style properties of the image
+        """
+        style_id_obj = self.sdc_image_style_ids[_id]
+        #print(style_id_obj.GetId())
+        uiss_style = self.lang_parser.parse_inline(styles)
+
+        if img_path == "":
+            img_path = style_id_obj.GetPath()
+        else:
+            style_id_obj.SetPath(img_path)
+            
+        self.UpdateImage(style_id_obj.GetWxId(), img_path, uiss_style)
