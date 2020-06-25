@@ -10,6 +10,8 @@
   width: 200px;
   height: 200px;
   background-color: #C7C729;
+
+  
 }
 
 @style grey-box {
@@ -28,4 +30,6 @@
   left: 300px;
   font-weight: bold;
   font-style: italic;
+  text-transform: capitalize;
 }
+

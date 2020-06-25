@@ -28,10 +28,13 @@
   left: 300px;
   font-weight: normal;
   font-style: italic;
+  transform-rotate: 10deg;
+  text-transform: uppercase;
 }
 
 @style icon {
   type: image;
   top: 400px;
   left: 300px;
+  transform-rotate: 90deg;
 }

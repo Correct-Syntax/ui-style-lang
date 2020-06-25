@@ -34,6 +34,7 @@ class MainApplication(wx.Frame):
         self.Bind(wx.EVT_ERASE_BACKGROUND, lambda x: None)
         self.Bind(wx.EVT_LEFT_DOWN, self.OnLeftDown)
         self.Bind(wx.EVT_RIGHT_DOWN, self.OnRightDown)
+        self.Bind(wx.EVT_MIDDLE_DOWN, self.OnMiddleDown)
 
 
     def OnPaint(self, event):
@@ -58,6 +59,15 @@ class MainApplication(wx.Frame):
         self._pdc.UpdateShapeStyles('grey-box',
                                     styles="background-color: red; top: 300px; left: 50px;"
                                     )
+
+        #self._pdc.UpdateImageStyles('icon', img_path="./logo.png", styles="top: 400px; transform-rotate: 90deg;")
+        self.RefreshDemo()
+
+    def OnMiddleDown(self, event):
+        styles = "top: 400px; transform-rotate: {}deg;".format(random.randint(-90, 180))
+        self._pdc.UpdateImageStyles('icon',
+                                    #img_path="./logo.png",
+                                    styles=styles)
         self.RefreshDemo()
 
     def OnRightDown(self, event):
@@ -80,6 +90,8 @@ class MainApplication(wx.Frame):
         
         self._pdc.UpdateShapeStyles('grey-box', styles=styles)
 
+        self._pdc.UpdateImageStyles('icon', styles="top: 40px; transform-rotate: 180deg;")
+
         self._pdc.UpdateTextStyles('black-text', styles="color: red; text-decoration: underline; font-size: larger; font-style: italic; font-weight: bold;")
         self.RefreshDemo()
 
@@ -89,6 +101,7 @@ class MainApplication(wx.Frame):
         dc.InitShapeStyles('grey-box')
         dc.InitShapeStyles('rect')
         dc.InitTextStyles('black-text', text="UI Style Lang Demo")
+        dc.InitImageStyles('icon', img_path="./test-img.png")
 
         # Change styles
         dc.UpdateShapeStyles('rect', styles="border-color: blue; border-width: 3px;")
