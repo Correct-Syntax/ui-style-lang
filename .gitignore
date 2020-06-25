@@ -1,3 +1,6 @@
 
 # Ignore .pyc files
 *.pyc 
+
+# Ignore built docs
+docs/build

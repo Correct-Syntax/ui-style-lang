@@ -18,6 +18,33 @@ Basic Syntax Rules
 
 UI Style Lang language is much like CSS in it's syntax. However, UI Style Lang differs in certain areas, especially in the strictness of spacing.
 
+Declarations
+------------
+
+Declare an element style with ``@style`` and assign an id like below:
+
+.. code-block:: css
+
+   @style element-id {
+
+   }
+
+An id can include alphabetical characters A-Z and numbers, separated by dashes.
+
+Properties
+----------
+
+Properties are written much like in CSS:
+
+.. code-block:: css
+
+   @style element-id {
+      border-width: 2px;
+   }
+
+Values, such as "2px" in the above example, *must include the suffix "px" or "deg"*, depending on the property.
+
+
 Spacing
 -------
 
@@ -47,7 +74,7 @@ For example:
    @style tester{ // Bad spacing here...
       border-color:grey; // and here...
       border-width: 2 px; // and here.
-      background-color: red; 
+      background-color: red; // This is good, though.
    }
 
 
