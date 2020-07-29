@@ -36,6 +36,7 @@ import wx
 import wx.adv
 
 from .lang import UIStyleLangParser
+from .utils import ReadRawFile
 
 
 # Note: "type" gets set on runtime; no need to put it in here
@@ -118,7 +119,7 @@ class UIStylePDC(wx.adv.PseudoDC):
         wx.adv.PseudoDC.__init__(self)
 
         self.parent_window = parent
-        self.raw_stylesheet = self.ReadRawFile(file)
+        self.raw_stylesheet = ReadRawFile(file)
         self.lang_parser = UIStyleLangParser(self.GetRawStyleSheet())
         self.sdc_shape_style_ids = {}
         self.sdc_text_style_ids = {}
@@ -174,21 +175,7 @@ class UIStylePDC(wx.adv.PseudoDC):
         # At this point, set the current styles to be the new styles 
         self.current_styles[_id] = styles_dict
         return styles_dict
-
-    def ReadRawFile(self, raw_file):
-        """ Reads the raw file from the system.
-        Supports .CSS and .UISS stylesheets
-        """
-
-        if raw_file.endswith(".css") or raw_file.endswith(".uiss"):
-            raw_text = open(raw_file, "r").read()
-            return raw_text
-
-        else:
-            msg = 'Invalid file type! Only .uiss and .css filetype extensions are supported.'
-            raise Exception(msg)
-
-
+    
     def GetRawStyleSheet(self):
         return self.raw_stylesheet
 
