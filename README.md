@@ -5,14 +5,27 @@
 
 UI Style Lang is a simple CSS-like language which allows for drawing and styling wxPython elements. Many UI Style Lang properties are the same as the normal (not short-hand) CSS3 properties. This provides a familiar syntax, especially for those with experience with CSS3.
 
-Only part of the drawing API is implemented right now. SVG support is coming soon(?). The wxPython element styling is planned for a later time.
+# WIP/ TODO
+
+* SVG support(?).
+* More widget styling support
 
 # Features
 
-* Written in pure Python with minimal dependancies (just wxPython and the standard library)
-* Over 12 CSS properties already supported
-* Draw circles, rectangles, squares, images, & text with the drawing API
-* Both loading from inline styles and an external stylesheet is supported
+* **Written in pure Python with minimal dependancies (just wxPython and the standard library)**
+
+* **Drawing API**
+    * Includes the ``UIStylePDC`` UI Style Lang class which is a powerful extension of the wxPython ``wx.PseudoDC``
+    * Over 15 stylesheet properties already supported
+    * Draw circles, rectangles, squares, images, & text
+    * Translate & rotate objects
+    * Load styles from inline styles and an external stylesheet
+    * Auto-handles IDs, with support for manual-handling of IDs
+
+* **Widget Styling API**
+    * Supports loading from a stylesheet for easy theming
+    * Support for styling panels, frames (currently)
+
 
 # Development 
 
