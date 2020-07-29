@@ -4,8 +4,8 @@
 # This demo file (demo.py) is MIT licensed - (C) 2020 Noah Rahm, Correct Syntax
 
 # Usage:
-# Run the demo and click the right and left mouse buttons back and forth
-# to see the styles change.
+# Run the demo and click the right, middle and left mouse buttons back
+# and forth to see the styles change.
 
 # TODO:
 # Comments!!!

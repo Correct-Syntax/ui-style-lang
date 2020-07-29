@@ -1,0 +1,9 @@
+
+
+@style main-frame {
+  background-color: #444;
+}
+
+@style main-panel {
+  background-color: transparent;
+}
