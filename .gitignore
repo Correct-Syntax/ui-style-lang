@@ -4,3 +4,16 @@
 
 # Ignore built docs
 docs/build
+
+# Ignore test files
+demo.py
+demo-styles.uiss
+demo-styles.css
+demo2.py
+demo-styles2.uiss
+custom-widget-demo.py
+custom-widget-demo.uiss
+
+test-img.png
+mail.gif
+bird150.jpg
