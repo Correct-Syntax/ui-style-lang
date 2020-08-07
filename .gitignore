@@ -5,6 +5,10 @@
 # Ignore built docs
 docs/build
 
+# Ignore package folders
+dist
+build
+
 # Ignore test files
 demo.py
 demo-styles.uiss

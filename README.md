@@ -1,9 +1,11 @@
-# UI Style Lang (Language)
+UI Style Lang (Language)
+========================
 
-!["UI Style Lang"](logo.png?raw=true "UI Style Lang")
+!["UI Style Lang"](https://github.com/Correct-Syntax/ui-style-lang/blob/master/logo.png?raw=true "UI Style Lang")
 
 
 UI Style Lang is a simple CSS-like language which allows for drawing and styling wxPython elements. Many UI Style Lang properties are the same as the normal (not short-hand) CSS3 properties. This provides a familiar syntax, especially for those with experience with CSS3.
+
 
 # WIP/ TODO
 
@@ -33,7 +35,7 @@ Pull requests and/or feature suggestions are welcome!
 
 # Usage
 
-See the [docs](/docs/) and [full demo](/demo/demo.py) for information on usage...
+See the [docs](https://github.com/Correct-Syntax/ui-style-lang/tree/master/docs) and [full demos](https://github.com/Correct-Syntax/ui-style-lang/tree/master/demo) for information on usage...
 
 # License
 
