@@ -66,12 +66,19 @@ class ShapeID(object):
     def __init__(self, _id):
         self.uisl_id = _id
         self.wx_id = wx.NewIdRef()
+        self.rect = wx.Rect(0, 0, 0, 0)
 
     def GetId(self):
         return self.uisl_id
 
     def GetWxId(self):
         return self.wx_id
+
+    def SetRect(self, rect):
+        self.rect = rect
+
+    def GetRect(self):
+        return self.rect
 
 
 class TextID(object):
@@ -157,7 +164,7 @@ class UIStylePDC(wx.adv.PseudoDC):
 
             # The style type is obviously not saved here
             self.current_styles[obj.GetWxId()] = DEFAULT_PROPERTIES
-
+ 
     def _MergeParsedStyles(self, _id, styles):
         """ Merge new styles and the current styles dicts.
         
@@ -182,7 +189,7 @@ class UIStylePDC(wx.adv.PseudoDC):
     def GetLangParser(self):
         return self.lang_parser
 
-    def GetWXId(id_, style_type="shape"):
+    def GetWXId(self, _id, style_type="shape"):
         """ Returns the assigned wxPython id of the element. Useful for 
         situations when you need to mess with the wxPython ids yourself.
 
@@ -198,6 +205,25 @@ class UIStylePDC(wx.adv.PseudoDC):
             id_obj = self.sdc_shape_style_ids[_id]
 
         return id_obj.GetWxId()
+
+
+    def GetWXRect(self, _id, style_type="shape"):
+        """ Get the wxPython Rect of the element.
+
+        :param str _id: id to of the element (must be already declared in 
+        the intial stylesheet)
+        :param str style_type: type of the element - can be one of: text, image, shape
+        
+        :returns: `wx.Rect`
+        """
+        if style_type == "text":
+            id_obj = self.sdc_text_style_ids[_id]
+        elif style_type == "image":
+            id_obj = self.sdc_image_style_ids[_id]
+        else:
+            id_obj = self.sdc_shape_style_ids[_id]
+
+        return id_obj.GetRect()
 
     @property
     def ParsedStyles(self):
@@ -218,7 +244,7 @@ class UIStylePDC(wx.adv.PseudoDC):
         """
         styles = self.ParsedStyles[_id]
         style_id_obj = self.sdc_shape_style_ids[_id]
-        self.UpdateShape(style_id_obj.GetWxId(), styles)
+        self.UpdateShape(style_id_obj.GetWxId(), style_id_obj, styles)
 
 
     def InitTextStyles(self, _id, text=""):
@@ -251,7 +277,7 @@ class UIStylePDC(wx.adv.PseudoDC):
         self.UpdateImage(style_id_obj.GetWxId(), img_path, styles)
 
 
-    def UpdateShape(self, _id, styles):
+    def UpdateShape(self, _id, id_obj, styles):
         self.ClearId(_id)
         self.SetId(_id)
 
@@ -269,6 +295,9 @@ class UIStylePDC(wx.adv.PseudoDC):
         uiss_width = self.CleanProperty(styles_dict["width"]) 
         uiss_height = self.CleanProperty(styles_dict["height"]) 
 
+        # Set the rect of the element
+        id_obj.SetRect(wx.Rect(uiss_left, uiss_top, uiss_width, uiss_height))
+
         # Use styles
         self.SetPen(wx.Pen(wx.Colour(uiss_border_color), uiss_border_width))
         self.SetBrush(wx.Brush(wx.Colour(uiss_background_color), wx.SOLID))
@@ -278,14 +307,14 @@ class UIStylePDC(wx.adv.PseudoDC):
                 # Correct the coordinates so that the circle's "corner" is 
                 # placed at the uiss_top and uiss_left position
                 half = uiss_width/2
-                self.DrawCircle(uiss_top+half, uiss_left+half, uiss_border_radius)
+                self.DrawCircle(uiss_left+half, uiss_top+half, uiss_border_radius)
             else:
                 self.DrawRoundedRectangle(
-                    uiss_top, uiss_left, uiss_width, uiss_height, uiss_border_radius
+                    uiss_left, uiss_top, uiss_width, uiss_height, uiss_border_radius
                     )
 
         else:
-            self.DrawRectangle(uiss_top, uiss_left, uiss_width, uiss_height)
+            self.DrawRectangle(uiss_left, uiss_top, uiss_width, uiss_height)
 
 
     def UpdateText(self, _id, text, styles):
@@ -384,11 +413,10 @@ class UIStylePDC(wx.adv.PseudoDC):
             text = text.capitalize()
 
         if uiss_transform_rotate == 0:
-            self.DrawText(text, uiss_top, uiss_left)
+            self.DrawText(text, uiss_left, uiss_top)
         else:
-            self.DrawRotatedText(text, uiss_top, uiss_left, uiss_transform_rotate)
+            self.DrawRotatedText(text, uiss_left, uiss_top, uiss_transform_rotate)
             
-
 
     def UpdateImage(self, _id, img_path, styles):
         self.ClearId(_id)
@@ -399,8 +427,8 @@ class UIStylePDC(wx.adv.PseudoDC):
         # Define styles 
         uiss_top = self.CleanProperty(styles_dict["top"]) 
         uiss_left = self.CleanProperty(styles_dict["left"]) 
-        uiss_width = self.CleanProperty(styles_dict["width"]) 
-        uiss_height = self.CleanProperty(styles_dict["height"]) 
+        #uiss_width = self.CleanProperty(styles_dict["width"]) 
+        #uiss_height = self.CleanProperty(styles_dict["height"]) 
 
         uiss_transform_rotate = self.CleanProperty(styles_dict["transform-rotate"])
 
@@ -410,19 +438,19 @@ class UIStylePDC(wx.adv.PseudoDC):
         #if uiss_height != 0 and uiss_width != 0:
         #img_center = wx.Point(uiss_left+(image.GetWidth()/2), uiss_top+(image.GetHeight()/2))
         #print(img_center)
-
+ 
         if uiss_transform_rotate > 0:
             #print(uiss_transform_rotate)
 
             # There could be a bug with this code since it doesn't seem to have
             # the correct rotation all the time.
             image = wx.Image.Rotate(
-                image, uiss_transform_rotate, wx.Point(uiss_top, uiss_left)
+                image, uiss_transform_rotate, wx.Point(uiss_left, uiss_top)
                 )
 
         bitmap = wx.Image.ConvertToBitmap(image)
 
-        self.DrawBitmap(bitmap, uiss_top, uiss_left, True)
+        self.DrawBitmap(bitmap, uiss_left, uiss_top, True)
 
 
     def UpdateShapeStyles(self, _id, styles=""):
@@ -436,7 +464,7 @@ class UIStylePDC(wx.adv.PseudoDC):
         style_id_obj = self.sdc_shape_style_ids[_id]
         #print(style_id_obj.GetId())
         uiss_style = self.lang_parser.parse_inline(styles)
-        self.UpdateShape(style_id_obj.GetWxId(), uiss_style)
+        self.UpdateShape(style_id_obj.GetWxId(), style_id_obj, uiss_style)
 
 
     def UpdateTextStyles(self, _id, text="", styles=""):
