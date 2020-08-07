@@ -60,8 +60,16 @@ class UIStyleFrame(wx.Frame):
             "background-color": "transparent",
             }
         self.current_styles = self.default_properties
-        
-        self.ConfigureStyle()
+
+        try:
+            self.ConfigureStyle()
+        except KeyError:
+            print(
+"""UISTYLELANG: Styling was not declared for the UIStyleFrame with the id of '{}'.
+Please declare it in the stylesheet.""".format(self.GetName())
+)
+        except Exception as error:
+            print(error)
         
     def CleanProperty(self, prop):
         return wx.GetApp().lang_parser.clean_property(prop)
@@ -78,6 +86,7 @@ class UIStyleFrame(wx.Frame):
             )
         
         uiss_background_color = self.CleanProperty(styles_dict["background-color"])
+
         return self.SetBackgroundColour(wx.Colour(uiss_background_color))
         
         
@@ -92,7 +101,15 @@ class UIStylePanel(wx.Panel):
             }
         self.current_styles = self.default_properties
         
-        self.ConfigureStyle()
+        try:
+            self.ConfigureStyle()
+        except KeyError:
+            print(
+"""UISTYLELANG: Styling was not declared for the UIStylePanel with the id of '{}'.
+Please declare it in the stylesheet.""".format(self.GetName())
+)
+        except Exception as error:
+            print(error)
         
     def CleanProperty(self, prop):
         return wx.GetApp().lang_parser.clean_property(prop)
