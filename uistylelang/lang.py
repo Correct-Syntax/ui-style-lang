@@ -35,7 +35,7 @@ class UIStyleLangParser(object):
     def get_lang_string(self):
         return self.uistylelang_str
 
-    def parse(self):
+    def parse(self, styles="", inline=False):
         """ Parses the UI Style Language text and formats the data into a dictionary.
         
         Return format:
@@ -49,8 +49,14 @@ class UIStyleLangParser(object):
         """
         parsed_data = {}
 
+        if styles == "":
+            uiss_styles = self.get_lang_string()
+        else:
+            uiss_styles = styles
+
         token_specification = [
-            ('ID', r'@style [A-Za-z\-]+ {'), # Identifiers
+            ('ID', r'@style [A-Za-z\-:]+'), #  Identifiers
+            ('BEGIN', r'{'), # Statement begin
             ('PROPERTY', r'[A-Za-z0-9\-]+'), # Properties
             ('VALUE', r': [A-Za-z0-9#\.]+;'), # Property values
             ('END', r'}'), # Statement terminator
@@ -63,42 +69,48 @@ class UIStyleLangParser(object):
         line_num = 1
         line_start = 0
 
-        for mo in re.finditer(tok_regex, self.get_lang_string()):
+        for mo in re.finditer(tok_regex, uiss_styles):
             kind = mo.lastgroup
             value = mo.group()
             column = mo.start() - line_start
 
-            if kind == "PROPERTY":
-                value = value 
-            elif kind == "VALUE":
-                value = value
-            elif kind == "ID" and value in []:
-                kind = value
-            elif kind == "NEWLINE":
+            if kind == "NEWLINE":
                 line_start = mo.end()
                 line_num += 1
                 continue
             elif kind == "SKIP":
                 continue
             elif kind == "MISMATCH":
-                raise RuntimeError(f'{value!r} unexpected on line {line_num}')
+                raise RuntimeError(f'{value!r} unexpected on line {line_num}, column {column}')
 
-            
-            if kind == "ID":
-                # Get the id
-                style_id = value[7:][:-2]
-                prop_dict = {} # inner properties
+            elif kind == "BEGIN":
+                pass
+
+            elif kind == "ID":
+                if inline == False:
+                    # Get the id
+                    style_id = value[7:]
+                    prop_dict = {} # inner properties
 
             elif kind == "PROPERTY":
-                property_selector = value
-                prop_dict[str(property_selector)] = None
+                if inline == False:
+                    property_selector = value
+                    prop_dict[str(property_selector)] = None
+                else:
+                    property_selector = value
+                    parsed_data[str(property_selector)] = None
 
             elif kind == "VALUE":
-                property_val = value[2:][:-1]
-                prop_dict[str(property_selector)] = property_val
+                if inline == False:
+                    property_val = value[2:][:-1]
+                    prop_dict[str(property_selector)] = property_val
+                else:
+                    property_val = value[2:][:-1]
+                    parsed_data[str(property_selector)] = property_val
 
             elif kind == "END":
-                parsed_data[style_id] = prop_dict
+                if inline == False:
+                    parsed_data[style_id] = prop_dict
 
             #print(kind, value, "\n")
 
@@ -118,51 +130,7 @@ class UIStyleLangParser(object):
             }
 
         """
-        parsed_data = {}
-
-        token_specification = [
-            ('PROPERTY', r'[A-Za-z0-9\-]+'), # CSS properties
-            ('VALUE', r': [A-Za-z0-9#\.\-]+;'), # CSS property values
-            ('NEWLINE', r'\n'), # Line endings
-            ('SKIP', r'[ \t]+'), # Skip over spaces and tabs
-            ('MISMATCH', r'.'), # Any other (invalid) character
-        ]
-        
-        tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
-        line_num = 1
-        line_start = 0
-
-        for mo in re.finditer(tok_regex, styles):
-            kind = mo.lastgroup
-            value = mo.group()
-            column = mo.start() - line_start
-
-            if kind == "PROPERTY":
-                value = value 
-            elif kind == "VALUE":
-                value = value
-            elif kind == "NEWLINE":
-                line_start = mo.end()
-                line_num += 1
-                continue
-            elif kind == "SKIP":
-                continue
-            elif kind == "MISMATCH":
-                raise RuntimeError(f'{value!r} unexpected on line {line_num}')
-
-
-            if kind == "PROPERTY":
-                property_selector = value
-                parsed_data[str(property_selector)] = None
-
-            elif kind == "VALUE":
-                property_val = value[2:][:-1]
-                parsed_data[str(property_selector)] = property_val
-
-            #print(kind, value, "\n")
-
-        #print(parsed_data, "<<<")
-        return parsed_data
+        return self.parse(styles, inline=True)
 
 
     def clean_property(self, uiss_prop):
