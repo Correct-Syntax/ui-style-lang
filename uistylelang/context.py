@@ -190,12 +190,11 @@ class UIStylePDC(wx.adv.PseudoDC):
         return self.lang_parser
 
     def GetWXId(self, _id, style_type="shape"):
-        """ Returns the assigned wxPython id of the element. Useful for 
-        situations when you need to mess with the wxPython ids yourself.
+        """ Returns the assigned wxPython id of the element. Useful for situations when you need to mess with the wxPython ids yourself.
 
-        :param str _id: id to of the element (must be already declared in 
-        the intial stylesheet)
+        :param str _id: id to of the element (must be already declared in the intial stylesheet)
         :param str style_type: type of the element - can be one of: text, image, shape
+        :returns: `wx.IdRef`
         """
         if style_type == "text":
             id_obj = self.sdc_text_style_ids[_id]
@@ -210,10 +209,8 @@ class UIStylePDC(wx.adv.PseudoDC):
     def GetWXRect(self, _id, style_type="shape"):
         """ Get the wxPython Rect of the element.
 
-        :param str _id: id to of the element (must be already declared in 
-        the intial stylesheet)
+        :param str _id: id to of the element (must be already declared in the intial stylesheet)
         :param str style_type: type of the element - can be one of: text, image, shape
-        
         :returns: `wx.Rect`
         """
         if style_type == "text":
@@ -235,12 +232,11 @@ class UIStylePDC(wx.adv.PseudoDC):
 
 
     def InitShapeStyles(self, _id):
-        """ Draws the shape with the same id declared in the 
-        stylesheet. This can be thought of like the following 
-        pseudo-HTML: *<div class="{{_id}}"></div>*
+        """ Draws the shape with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: 
+        
+        ```<div class="{{_id}}"></div>```
 
-        :param str _id: id to draw (must be already declared in 
-        the intial stylesheet)
+        :param str _id: id to draw (must be already declared in the intial stylesheet)
         """
         styles = self.ParsedStyles[_id]
         style_id_obj = self.sdc_shape_style_ids[_id]
@@ -248,12 +244,11 @@ class UIStylePDC(wx.adv.PseudoDC):
 
 
     def InitTextStyles(self, _id, text=""):
-        """ Draws the text with the same id declared in the 
-        stylesheet. This can be thought of like the following 
-        pseudo-HTML: *<p class="{{_id}}">{{text}}</p>*
+        """ Draws the text with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: 
+        
+        ``<p class="{{_id}}">{{text}}</p>``
 
-        :param str _id: id to draw (must be already declared in 
-        the intial stylesheet)
+        :param str _id: id to draw (must be already declared in the intial stylesheet)
         :param str text: text to be drawn and displayed
         """
         styles = self.ParsedStyles[_id]
@@ -263,12 +258,11 @@ class UIStylePDC(wx.adv.PseudoDC):
 
 
     def InitImageStyles(self, _id, img_path=""):
-        """ Draws the image with the same id declared in the 
-        stylesheet. This can be thought of like the following 
-        pseudo-HTML: *<img class="{{_id}}" src="{{img_path}}">*
+        """ Draws the image with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: 
+        
+        ``<img class="{{_id}}" src="{{img_path}}">``
 
-        :param str _id: id to draw (must be already declared in 
-        the intial stylesheet)
+        :param str _id: id to draw (must be already declared in the intial stylesheet)
         :param str img_path: path of the image to be drawn and displayed
         """
         styles = self.ParsedStyles[_id]
@@ -454,9 +448,9 @@ class UIStylePDC(wx.adv.PseudoDC):
 
 
     def UpdateShapeStyles(self, _id, styles=""):
-        """ Updates and draws the shape with the same id 
-        declared in the stylesheet. This can be thought of like the 
-        following pseudo-HTML: *<div class="{{_id}}" style="{{styles}}"></div>*
+        """ Updates and draws the shape with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: 
+        
+        ``<div class="{{_id}}" style="{{styles}}"></div>``
 
         :param str _id: id to draw (must be already declared in the intial stylesheet)
         :param str styles: inline styles to update and override style properties of the shape
@@ -468,12 +462,11 @@ class UIStylePDC(wx.adv.PseudoDC):
 
 
     def UpdateTextStyles(self, _id, text="", styles=""):
-        """ Updates and draws the text with the same id declared 
-        in the stylesheet. This can be thought of like the following 
-        pseudo-HTML: *<p class="{{_id}}" style="{{styles}}">{{text}}</p>*
+        """ Updates and draws the text with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: 
+        
+        ``<p class="{{_id}}" style="{{styles}}">{{text}}</p>``
 
-        :param str _id: id to draw (must be already declared in the 
-        intial stylesheet)
+        :param str _id: id to draw (must be already declared in the intial stylesheet)
         :param str text: update and override the text to be drawn and displayed
         :param str styles: inline styles to update and override style properties of the text
         """
@@ -490,9 +483,9 @@ class UIStylePDC(wx.adv.PseudoDC):
 
 
     def UpdateImageStyles(self, _id, img_path="", styles=""):
-        """ Updates and draws the image with the same id declared in the 
-        stylesheet. This can be thought of like the following 
-        pseudo-HTML: *<img class="{{_id}}" src="{{img_path}}" style="{{styles}}">*
+        """ Updates and draws the image with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: 
+        
+        ``<img class="{{_id}}" src="{{img_path}}" style="{{styles}}">``
 
         :param str _id: id to draw (must be already declared in the intial stylesheet)
         :param str img_path: update and override the image path to be drawn and displayed
