@@ -45,6 +45,21 @@ Properties are written much like in CSS:
 Values, such as "2px" in the above example, *must include the suffix "px" or "deg"*, depending on the property.
 
 
+Comments
+--------
+
+UI Style Lang has support for single-line comments in the stylesheet. Multi-line comments may be supported in the future.
+
+.. code-block:: css
+
+   /* An element with a comment */
+   @style element-id {
+      border-width: 2px;
+      background-color: blue;
+   }
+
+.. versionadded:: 0.6
+
 Spacing
 -------
 
@@ -57,7 +72,7 @@ For example:
 
 .. code-block:: css
 
-   // This is correct syntax
+   /* This is correct syntax */
 
    @style tester {
       border-color: grey;
@@ -69,12 +84,12 @@ For example:
 
 .. code-block:: css
 
-   // This is WRONG syntax and will result in an error!
+   /* This is WRONG syntax and will result in an error! */
 
-   @style tester{ // Bad spacing here...
-      border-color:grey; // and here...
-      border-width: 2 px; // and here.
-      background-color: red; // This is good, though.
+   @style tester{ /* Bad spacing here... */
+      border-color:grey; /* and here... */
+      border-width: 2 px; /* and here. */
+      background-color: red; /* This is good, though. */
    }
 
 
@@ -94,6 +109,11 @@ Below is a minimal example of the UI Style Lang language declaring a 200 x 200px
       border-width: 2px;
       background-color: red;
    }
+
+.. note::
+
+   You will not see anything drawn unless you specify the `top`, `left`, `bottom` and `top` properties. It is easy to forget, but be sure to do so!
+
 
 Style Sheet Properties
 ^^^^^^^^^^^^^^^^^^^^^^
