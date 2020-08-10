@@ -13,6 +13,7 @@ UI Style Lang is a CSS-like language for styling and drawing in wxPython
    :caption: Contents:
 
    api
+   troubleshooting
 
 
 
