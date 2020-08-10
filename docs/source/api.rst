@@ -314,22 +314,22 @@ Specifies the decoration added to the text
 Python API
 ==========
 
-The "HTML equivelent" in UI Style Lang is the Python method API. The HTML + CSS feel is most pronounced in the ``UIStyleDC`` drawing API.
+The "HTML equivelent" in UI Style Lang is the Python method API. The HTML + CSS feel is most pronounced in the ``UIStylePDC`` drawing API.
 
 Drawing API
 ^^^^^^^^^^^
 
-The drawing API is an abstraction of wxPython DCs. UIStyleDC is implemented as an enhanced wrapper of ``wx.adv.PseudoDC``. Other wxPython DCs may be supported in the future, but are not planned.
+The drawing API is an abstraction of wxPython DCs. UIStylePDC is implemented as an enhanced wrapper of ``wx.adv.PseudoDC``. Other wxPython DCs may be supported in the future, but are not planned.
 
-UIStyleDC
----------
+UIStylePDC
+----------
 
-The ``UIStyleDC`` class is an enhanced wrapper for the ``wx.adv.PseudoDC``, making it possible to use UI Style Lang to draw on any ``wx.Window``. 
+The ``UIStylePDC`` class is an enhanced wrapper for the ``wx.adv.PseudoDC``, making it possible to use UI Style Lang to draw on any ``wx.Window``. 
 
 .. note::
-   The normal methods from the ``PseudoDC`` are still accessible from ``UIStyleDC``. 
+   The normal methods from the ``PseudoDC`` are still accessible from ``UIStylePDC``. 
 
-.. py:class:: UIStyleDC(parent, file)
+.. py:class:: UIStylePDC(parent, file)
 
    initilizes the DC and styles
 

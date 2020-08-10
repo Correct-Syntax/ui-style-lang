@@ -27,7 +27,7 @@ Drawn Elements Do Not Show Up
 
 .. code-block:: python
 
-    # "dc" here refers to the `UIStyleDC`
+    # "dc" here refers to the `UIStylePDC`
     dc.InitShapeStyles('example')
 
 
@@ -57,4 +57,4 @@ By default, the exampe above will return False because the default background co
 
 **2. Make sure the widget is visible.**
 
-The `UiStyleApp` background, `UIStyleFrames` and even `UIStylePanels` can be hidden from view by the `UIStyleDC` and other widgets placed inside them. Thus, any styling applied to them cannot be seen.
+The `UiStyleApp` background, `UIStyleFrames` and even `UIStylePanels` can be hidden from view by the `UIStylePDC` and other widgets placed inside them. Thus, any styling applied to them cannot be seen.
