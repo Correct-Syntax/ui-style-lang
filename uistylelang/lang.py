@@ -35,6 +35,18 @@ class UIStyleLangParser(object):
     def get_lang_string(self):
         return self.uistylelang_str
 
+    def remove_comments(self, input_text):
+        """ Removes comments from the raw stylesheet.
+
+        *Comment Syntax*: /* comment content */
+
+        :param input_text: the raw input stylesheet code to remove comments from
+        :returns: string of text without comments
+        """
+        p = re.compile(r'/\*.*?\*/')
+        output_text = p.sub('', input_text)
+        return output_text
+
     def parse(self, styles="", inline=False):
         """ Parses the UI Style Language text and formats the data into a dictionary.
         
@@ -50,9 +62,9 @@ class UIStyleLangParser(object):
         parsed_data = {}
 
         if styles == "":
-            uiss_styles = self.get_lang_string()
+            uiss_styles = self.remove_comments(self.get_lang_string())
         else:
-            uiss_styles = styles
+            uiss_styles = self.remove_comments(styles)
 
         token_specification = [
             ('ID', r'@style [A-Za-z\-:]+'), #  Identifiers
@@ -68,7 +80,7 @@ class UIStyleLangParser(object):
         tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
         line_num = 1
         line_start = 0
-
+ 
         for mo in re.finditer(tok_regex, uiss_styles):
             kind = mo.lastgroup
             value = mo.group()
@@ -167,6 +179,11 @@ if __name__ == "__main__":
     @style rect {
       border-radius: 1.5px;
       border-color: red;
+    }
+
+    @style rect:active {
+      border-radius: 0.9px;
+      border-color: blue;
     }
 
     """
