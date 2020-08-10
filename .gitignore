@@ -9,6 +9,9 @@ docs/build
 dist
 build
 
+# Ignore vscode
+.vscode
+
 # Ignore test files
 demo.py
 demo-styles.uiss
