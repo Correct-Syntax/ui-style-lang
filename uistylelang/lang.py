@@ -186,6 +186,20 @@ if __name__ == "__main__":
       border-color: blue;
     }
 
+    @style btn:hover {
+      left: 150px;
+    }
+
+    /* Test comment */
+    @style btn:init {
+      left: 80px;
+    }
+    
+    @style tog-btn {
+      /* background-color: blue; */
+      type: text;
+    }
+
     """
     parser = UIStyleLangParser(string)
     parsed_str = parser.parse()
