@@ -22,7 +22,7 @@ copyright = '2020, Noah Rahm, Correct Syntax'
 author = 'Noah Rahm, Correct Syntax'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.0'
+release = '0.6.0'
 
 
 # -- General configuration ---------------------------------------------------
