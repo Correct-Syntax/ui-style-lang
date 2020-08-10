@@ -319,7 +319,7 @@ The "HTML equivelent" in UI Style Lang is the Python method API. The HTML + CSS 
 Drawing API
 ^^^^^^^^^^^
 
-The drawing API is an abstraction of wxPython DCs. UIStylePDC is implemented as an enhanced wrapper of ``wx.adv.PseudoDC``. Other wxPython DCs may be supported in the future, but are not planned.
+The drawing API is an abstraction of wxPython DCs. ``UIStylePDC`` is implemented as an enhanced wrapper of ``wx.adv.PseudoDC``. Other wxPython DCs may be supported in the future, but are not planned.
 
 UIStylePDC
 ----------
@@ -327,43 +327,20 @@ UIStylePDC
 The ``UIStylePDC`` class is an enhanced wrapper for the ``wx.adv.PseudoDC``, making it possible to use UI Style Lang to draw on any ``wx.Window``. 
 
 .. note::
-   The normal methods from the ``PseudoDC`` are still accessible from ``UIStylePDC``. 
-
-.. py:class:: UIStylePDC(parent, file)
-
-   initilizes the DC and styles
-
-   :param parent: an instance of ``wx.Frame``
-   :param file: path to the stylesheet with intial styles declared (supports a .uiss or .css file) 
+   The normal methods from the ``wx.adv.PseudoDC`` are still accessible from ``UIStylePDC``. 
 
 
-   .. py:method:: InitShapeStyles(_id)
-
-      Draws the shape with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: *<div class="{{_id}}"></div>*
-
-      :param str _id: Id of the element to be drawn declared in the initial stylesheet
+.. py:module:: uistylelang.context.UIStylePDC
+.. py:currentmodule:: uistylelang.context.UIStylePDC
 
 
-   .. py:method:: UpdateShapeStyles(_id, styles="")
+.. autoclass:: uistylelang.UIStylePDC
 
-      Updates and draws the shape with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: *<div class="{{_id}}" style="{{styles}}"></div>*
-
-      :param str _id: id to draw (must be already declared in the intial stylesheet)
-      :param str styles: inline styles to update and override style properties of the shape
-
-
-   .. py:method:: InitTextStyles(_id, text)
-
-      Draws the text with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: *<p class="{{_id}}">{{text}}</p>*
-
-      :param str _id: id to draw (must be already declared in the intial stylesheet)
-      :param str text: text to be drawn and displayed
-
-
-   .. py:method:: UpdateTextStyles(_id, text="", styles="")
-
-      Updates and draws the text with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: *<p class="{{_id}}" style="{{styles}}">{{text}}</p>*
-
-      :param str _id: id to draw (must be already declared in the intial stylesheet)
-      :param str text: update and override the text to be drawn and displayed
-      :param str styles: inline styles to update and override style properties of the text
+.. automethod:: uistylelang.UIStylePDC.GetWXId
+.. automethod:: uistylelang.UIStylePDC.GetWXRect
+.. automethod:: uistylelang.UIStylePDC.InitShapeStyles
+.. automethod:: uistylelang.UIStylePDC.InitTextStyles
+.. automethod:: uistylelang.UIStylePDC.InitImageStyles
+.. automethod:: uistylelang.UIStylePDC.UpdateTextStyles
+.. automethod:: uistylelang.UIStylePDC.UpdateShapeStyles
+.. automethod:: uistylelang.UIStylePDC.UpdateImageStyles
