@@ -64,13 +64,14 @@ class UIStyleLangParser(object):
         if styles == "":
             uiss_styles = self.remove_comments(self.get_lang_string())
         else:
-            uiss_styles = self.remove_comments(styles)
+            # We don't remove comments from inline styles -there shouldn't be any!
+            uiss_styles = styles
 
         token_specification = [
             ('ID', r'@style [A-Za-z\-:]+'), #  Identifiers
             ('BEGIN', r'{'), # Statement begin
             ('PROPERTY', r'[A-Za-z0-9\-]+'), # Properties
-            ('VALUE', r': [A-Za-z0-9#\.]+;'), # Property values
+            ('VALUE', r': [A-Za-z0-9#\.\-]+;'), # Property values
             ('END', r'}'), # Statement terminator
             ('NEWLINE', r'\n'), # Line endings
             ('SKIP', r'[ \t]+'), # Skip over spaces and tabs
