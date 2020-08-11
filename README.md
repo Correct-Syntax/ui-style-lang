@@ -6,6 +6,29 @@ UI Style Lang (Language)
 
 UI Style Lang is a simple CSS-like language which allows for drawing and styling wxPython elements. Many UI Style Lang properties are the same as the normal (not short-hand) CSS3 properties. This provides a familiar syntax, especially for those with experience with CSS3.
 
+Stylesheet example:
+
+```
+@style my-element {
+  border-radius: 15px;
+  width: 20px;
+  height 30px;
+  top: 20px;
+  left: 500px;
+  border-width: 2px;
+  background-color: blue;
+  border-color: #444;
+}
+```
+
+Python example:
+
+```python
+
+dc.InitShapeStyle("my-element")
+
+```
+
 
 # WIP/ TODO
 
@@ -26,7 +49,7 @@ UI Style Lang is a simple CSS-like language which allows for drawing and styling
 
 * **Widget Styling API**
     * Supports loading from a stylesheet for easy theming
-    * Support for styling panels, frames (currently)
+    * Support for styling app, panels, frames background color (currently)
 
 
 # Development 
