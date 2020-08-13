@@ -30,6 +30,28 @@
 # For consistency with the wxPython methods, title-case is used in this file
 
 
+# HOW THIS WORKS:
+
+# PDC Init
+# 1. Creates the Element objects from the parsed stylesheet data
+# * Each style set is accessible via the id selector and pseudo id selectors
+# 2. Assigns a wxPython id and the declared id selector and pseudo id selectors
+
+# Elem Init
+# 1. The element is updated with a type hint, content and styles
+# * The type hint tells the context draw method what to treat the element as
+# 2. The element is drawn
+
+# Elem Update
+# 1. Gets the id selector and pseudo id selector (e.g: 'elem:active')
+# 2. Get any updates to the image file path, text, inline styles, etc.
+# 3. Inline styles get added to/merged with the current styles
+# 4. The element is drawn
+
+# You can now call:
+# >> dc.InitElem('elem')
+# >> dc.UpdateElem('elem:active', styles="background-color: red;")
+
 
 import copy
 
@@ -62,7 +84,7 @@ SUPPORTED_PROPERTIES = {
 
 
 class Element(object):
-    """ Represets an abstract element object drawn on the DC. """
+    """ Represents an abstract element object drawn on the DC. """
     def __init__(self, elem_id):
         self.id_selector = elem_id
         self.wx_id = wx.NewIdRef()
@@ -120,6 +142,7 @@ class Element(object):
     def MergeStyles(self, pseudo_id, new_styles):
         """ Merge new styles and the current styles.
         
+        :param pseudo_id: pseudo id of this element of which to update with the new styles
         :param new_styles: new styles to merge with the current styles
         """
 
@@ -194,6 +217,7 @@ class UIStylePDC(wx.adv.PseudoDC):
         return elem.GetWxId()
 
     def DrawElem(self, elem_id, pseudo_id):
+        """ Draws the current element on the PDC. """
         elem = self._uisl_elements[elem_id]
         wx_id = elem.GetWxId()
 
@@ -358,14 +382,43 @@ class UIStylePDC(wx.adv.PseudoDC):
 
 
     def InitElem(self, id_statement, type_hint="SHAPE", content=""):
+        """ Initilizes and draws the element with the same id selector and pseudo-id selector declared in the stylesheet. 
+
+        :param str id_statement: id selector and pseudo-id selector to draw (must be already declared in the intial stylesheet)
+        :param str type_hint: one of: ``"SHAPE"``, ``"TEXT"`` or ``"IMAGE"`` hinting to the context what type to treat this element as. Defaults to ``"SHAPE"``.
+        :param str content: This could be either text or an image path to override the current text or image path to be drawn and displayed. This must agree with the `type_hint` value. 
+
+        See also: ``UpdateElem``
+        """
         ids = self.LangParser.get_statement_ids(id_statement)
         elem = self._uisl_elements[ids[0]]
         elem.SetType(type_hint)
         elem.SetContent(content)
         self.DrawElem(ids[0], ids[1])
 
-
+ 
     def UpdateElem(self, id_statement, content="", styles=""):
+        """ Updates and draws the element with the same id selector and pseudo-id selector declared in the stylesheet. 
+
+        Example:
+
+        .. code-block::
+
+            >> dc.InitElem('my-elem', "TEXT", "This is the text to be displayed")
+            >> dc.UpdateElem('my-elem:active', content="This is the updated text", styles="color: red;")
+        
+        These methods together can be thought of as an equivelant to the following pseudo HTML: 
+        
+        .. code-block::
+
+            <div class="{{ id_statement }}" style="{{ styles }}">{{ content }}</div>
+
+
+        :param str id_statement: id selector and pseudo-id selector to draw (must be already declared in the intial stylesheet)
+        :param str content: This could be either text or an image path to override the current text or image path to be drawn and displayed. This must agree with the `type_hint` value set in `InitElem`. 
+        :param str styles: inline styles to update and override style properties of the element. Please note that inline styles WILL overwrite values declared in the intial stylesheet.
+        """
+
         ids = self.LangParser.get_statement_ids(id_statement)
         new_styles = self.LangParser.parse_inline(styles)
         #print("\n style ", new_styles)
