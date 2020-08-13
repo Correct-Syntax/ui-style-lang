@@ -18,18 +18,119 @@ Basic Syntax Rules
 
 UI Style Lang language is much like CSS in it's syntax. However, UI Style Lang differs in certain areas, especially in the strictness of spacing.
 
-Declarations
-------------
+Declaration Syntax
+------------------
 
-Declare an element style with ``@style`` and assign an id like below:
+Declare an element style with the ``@style`` keyword and assign an *id selector* and/or a *pseudo-id selector* like below:
 
 .. code-block:: css
 
-   @style element-id {
-
+   @style id-selector:pseudo-id-selector {
+      ...
    }
 
-An id can include alphabetical characters A-Z and numbers, separated by dashes.
+
+Id Selectors
+************
+
+An *id selector* **represents a single element**, much like an HTML id. It can include alphabetical characters A-Z and numbers, separated by dashes.
+
+.. code-block:: css
+
+   @style my-element {
+      ...
+   }
+
+
+If a *pseudo-id selector* (See below for more on pseudo-id selectors) is not declared, by default it will be called "init".
+
+Therefore, writing:
+
+.. code-block:: css
+
+   @style my-element {
+      ...
+   }
+
+...is the same as writing:
+
+.. code-block:: css
+
+   @style my-element:init {
+      ...
+   }
+
+...and vice-versa.
+
+
+Pseudo-id Selectors
+*******************
+
+Declarations can also have *pseudo-id selectors* which **represent a unique style of an element an any time**, much like an HTML class.
+
+Like *id selectors*, it can include alphabetical characters A-Z and numbers, separated by dashes.
+
+*Id selectors* and *pseudo-id selectors* are separated by a single colon with no spacing:
+
+.. code-block:: css
+
+   @style my-element:hover {
+      ...
+   }
+
+
+This is a very powerful feature of UI Style Lang as it allows you to declare style changes to your element in the stylesheet. 
+
+It is useful especially for creating custom widgets where styles change depending on events as in this example:
+
+.. code-block:: css
+
+   /* button */
+   @style button {
+      background-color: #F4F4F4;
+      top: 20px;
+      left: 40px;
+      width: 115px;
+      height: 35px;
+      border-color: #D1D1D1;
+      border-size: 2px;
+   }
+
+   @style button:hover {
+      background-color: #FDFDFD;
+      top: 20px;
+      left: 40px;
+      width: 115px;
+      height: 35px;
+      border-color: #D1D1D1;
+      border-size: 2px;
+   }
+
+   @style button:press {
+      background-color: #D1D1D1;
+      top: 20px;
+      left: 40px;
+      width: 115px;
+      height: 35px;
+      border-color: #D1D1D1;
+      border-size: 2px;
+   }
+
+   @style button-text {
+      color: black;
+      top: 30px;
+      left: 47px;
+   }
+
+   @style button-text:hover {
+      color: #444;
+      top: 30px;
+      left: 47px;
+   }
+
+
+.. versionadded:: 0.8
+
 
 Properties
 ----------
@@ -117,26 +218,6 @@ Below is a minimal example of the UI Style Lang language declaring a 200 x 200px
 
 Style Sheet Properties
 ^^^^^^^^^^^^^^^^^^^^^^
-
-type
-----
-
-Sets the property type of the element. **(Specific to UI Style Lang)**
-
-.. warning::
-   Be sure to set this property when drawing text or images with the Drawing API!
-
-.. method:: type: shape|text|image
-
-   :shape (default):
-      This element is to be treated as a shape (circle, square, rectangle, etc)
-
-   :text:
-      This element is to be treated as text
-
-   :image:
-      This element is to be treated as an image
-
 
 top
 ---
