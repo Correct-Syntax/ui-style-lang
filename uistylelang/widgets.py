@@ -36,6 +36,12 @@ from .utils import ReadRawFile, MergeParsedStyles
 
 
 class UIStyleApp(wx.App):
+    """ Wrapper of ``wx.App`` 
+    
+    :param file: path to stylesheet for the Native Widget API styling
+
+    Please refer to the wxPython docs for the rest of the params.
+    """
     def __init__(self, file, redirect=False, filename=None, useBestVisual=False, clearSigInt=True):
         wx.App.__init__(self, redirect, filename, useBestVisual, clearSigInt)
 
@@ -52,6 +58,10 @@ class UIStyleApp(wx.App):
 
 
 class UIStyleFrame(wx.Frame):
+    """ Wrapper of ``wx.Frame`` 
+
+    Supported properties: ``background-color``
+    """
     def __init__(self, parent, id=-1, title="", pos=wx.DefaultPosition,
                  size=wx.DefaultSize, style=wx.DEFAULT_FRAME_STYLE, name="frame"):
         wx.Frame.__init__(self, parent, id, title, pos, size, style, name)
@@ -78,7 +88,7 @@ Please declare it in the stylesheet.""".format(self.GetName())
         """ Configures the styling of the frame. 
 
         :returns: a boolean value of whether the styling could be applied.
-        """
+        """ 
         styles_dict = MergeParsedStyles(
             self.GetName(),
             wx.GetApp().ParsedStyles,
@@ -91,9 +101,12 @@ Please declare it in the stylesheet.""".format(self.GetName())
         
         
 class UIStylePanel(wx.Panel):
+    """ Wrapper of ``wx.Panel`` 
+
+    Supported properties: ``background-color``
+    """
     def __init__(self, parent, id=-1, pos=wx.DefaultPosition, 
-            size=wx.DefaultSize, style= wx.TAB_TRAVERSAL | wx.NO_BORDER, 
-                name=wx.PanelNameStr):
+            size=wx.DefaultSize, style=wx.TAB_TRAVERSAL | wx.NO_BORDER, name="panel"):
         wx.Panel.__init__(self, parent, id, pos, size, style, name)
  
         self.default_properties = {
@@ -128,23 +141,46 @@ Please declare it in the stylesheet.""".format(self.GetName())
         
         uiss_background_color = self.CleanProperty(styles_dict["background-color"])
         return self.SetBackgroundColour(wx.Colour(uiss_background_color))
- 
+  
 
- 
- 
-# 
-# class StaticText(wx.StaticText):
-#     def __init__(self, parent, id=-1, label="", pos=wx.DefaultPosition, size=wx.DefaultSize, style=0, name=wx.StaticTextNameStr):
-#         super(StaticText, self).__init__(parent, id, label, pos, size, style, name)
+class UIStyleStaticText(wx.StaticText):
+    """ Wrapper of ``wx.StaticText`` 
 
+    Supported properties: ``background-color``, ``color``
+    """
+    def __init__(self, parent, id=-1, label="", pos=wx.DefaultPosition, size=wx.DefaultSize, style=0, name="static-text"):
+        wx.StaticText.__init__(self, parent, id, label, pos, size, style, name)
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        self.default_properties = {
+            "background-color": "transparent",
+            "color": "transparent",
+            }
+        self.current_styles = self.default_properties
+        
+        try:
+            self.ConfigureStyle()
+        except KeyError:
+            print(
+"""UISTYLELANG: Styling was not declared for the UIStyleStaticText with the id of '{}'.
+Please declare it in the stylesheet.""".format(self.GetName())
+)
+        except Exception as error:
+            print(error)
+        
+    def CleanProperty(self, prop):
+        return wx.GetApp().lang_parser.clean_property(prop)
+
+    def ConfigureStyle(self):
+        """ Configures the styling of the static text. """
+        
+        styles_dict = MergeParsedStyles(
+            self.GetName(),
+            wx.GetApp().ParsedStyles,
+            self.current_styles
+            )
+        
+        uiss_background_color = self.CleanProperty(styles_dict["background-color"])
+        uiss_color = self.CleanProperty(styles_dict["color"])
+
+        self.SetBackgroundColour(wx.Colour(uiss_background_color))
+        self.SetForegroundColour(wx.Colour(uiss_color))
