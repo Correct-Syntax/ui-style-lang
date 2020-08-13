@@ -30,6 +30,7 @@
 # For consistency with the wxPython methods, title-case is used in this file
 
 
+
 import copy
 
 import wx
@@ -40,7 +41,7 @@ from .utils import ReadRawFile
 
 
 # Note: "type" gets set on runtime; no need to put it in here
-DEFAULT_PROPERTIES = {
+SUPPORTED_PROPERTIES = {
     "color": "transparent",
     "background": "transparent",
     "background-color": "transparent",
@@ -60,19 +61,48 @@ DEFAULT_PROPERTIES = {
 }
 
 
-
-class ShapeID(object):
-    """ Represents a shape element. """
-    def __init__(self, _id):
-        self.uisl_id = _id
+class Element(object):
+    """ Represets an abstract element object drawn on the DC. """
+    def __init__(self, elem_id):
+        self.id_selector = elem_id
         self.wx_id = wx.NewIdRef()
+        self.elem_type = "SHAPE"
+        self.current_styles = {}
         self.rect = wx.Rect(0, 0, 0, 0)
+        self.content = "" # holds file path/text values
+
+    def InitStyles(self, styles):
+        self.current_styles = styles
+        for pseudo_id in self.current_styles:
+            for prop in SUPPORTED_PROPERTIES.keys():
+                if prop not in self.current_styles[pseudo_id].keys():
+                    self.current_styles[pseudo_id][prop] = copy.copy(SUPPORTED_PROPERTIES[prop])
 
     def GetId(self):
-        return self.uisl_id
+        return self.id_selector
 
     def GetWxId(self):
         return self.wx_id
+
+    def SetType(self, elem_type):
+        if elem_type in ["SHAPE", "TEXT", "IMAGE"]:
+            self.elem_type = elem_type
+        else:
+            raise RuntimeError("Invalid element type. Must be one of: SHAPE, TEXT, IMAGE") 
+
+    def GetType(self):
+        if self.elem_type != "":
+            return self.elem_type
+        else:
+            raise RuntimeError("Element was not initilized with the 'InitElem' method!")
+
+    def SetStyles(self, styles):
+        self.current_styles = styles
+
+    def GetStyles(self, pseudo_id=""):
+        if pseudo_id == "":
+            return self.current_styles
+        return self.current_styles[pseudo_id]
 
     def SetRect(self, rect):
         self.rect = rect
@@ -80,424 +110,266 @@ class ShapeID(object):
     def GetRect(self):
         return self.rect
 
+    def SetContent(self, content=""):
+        if content != "":
+            self.content = content
 
-class TextID(object):
-    """ Represents a text element. """
-    def __init__(self, _id, text="default"):
-        self.uisl_id = _id
-        self.wx_id = wx.NewIdRef()
-        self.text = text
+    def GetContent(self):
+        return self.content
 
-    def GetId(self):
-        return self.uisl_id
+    def MergeStyles(self, pseudo_id, new_styles):
+        """ Merge new styles and the current styles.
+        
+        :param new_styles: new styles to merge with the current styles
+        """
 
-    def GetWxId(self):
-        return self.wx_id
+        if new_styles != "":
+            # We only apply styles to this pseudo-id selector
+            for prop in new_styles:
+                # Make a copy so that we don't overwrite
+                new_prop_val = copy.copy(new_styles[prop])
 
-    def GetText(self):
-        return self.text
-
-    def SetText(self, text):
-        self.text = text
-
-
-class ImageID(object):
-    """ Represents an image element. """
-    def __init__(self, _id, path=""):
-        self.uisl_id = _id
-        self.wx_id = wx.NewIdRef()
-        self.image_path = path
-
-    def GetId(self):
-        return self.uisl_id
-
-    def GetWxId(self):
-        return self.wx_id
-
-    def GetPath(self):
-        return self.image_path
-
-    def SetPath(self, path):
-        self.image_path = path
+                # Merge the UI Style Lang properties. Any styles that are not 
+                # specified will automatically be the default ones.
+                self.current_styles[pseudo_id][prop] = new_prop_val
 
 
 class UIStylePDC(wx.adv.PseudoDC):
     def __init__(self, parent, file):
         wx.adv.PseudoDC.__init__(self)
 
-        self.parent_window = parent
-        self.raw_stylesheet = ReadRawFile(file)
-        self.lang_parser = UIStyleLangParser(self.GetRawStyleSheet())
-        self.sdc_shape_style_ids = {}
-        self.sdc_text_style_ids = {}
-        self.sdc_image_style_ids = {}
-        self.current_styles = {}
+        self._parent_window = parent
+        self._raw_stylesheet = ReadRawFile(file)
+        self._lang_parser = UIStyleLangParser(self.GetRawStyleSheet())
+        self._parsed_styles_data = self.LangParser.parse()
+        self._uisl_elements = {}
 
         self._InitDeviceContext()
 
-    
     def _InitDeviceContext(self):
-        for _id in self.ParsedStyles:
-            # Set the style type
-            try:
-                style_type = self.ParsedStyles[_id]["type"]
-            except KeyError:
-                # Default to "shape"
-                style_type = self.ParsedStyles[_id]["type"] = "shape"
-               
-            #print(_id, "->", style_type)
+        """ Create Element objects for each element declared in the stylesheet and assign the parsed styles to them.
 
-            # Create the id objects
-            if style_type == "text":
-                obj = TextID(_id)
-                self.sdc_text_style_ids[_id] = obj
+        For internal use only.
+        """
+        for id_selector in self.ParsedStyles:
 
-            elif style_type == "image":
-                obj = ImageID(_id)
-                self.sdc_image_style_ids[_id] = obj
-
-            else:
-                obj = ShapeID(_id)
-                self.sdc_shape_style_ids[_id] = obj
-
-            #print(obj.GetId(), '->', obj.GetWxId())
-
-            # The style type is obviously not saved here
-            self.current_styles[obj.GetWxId()] = DEFAULT_PROPERTIES
+            styles = self.ParsedStyles[id_selector]
+            elem = Element(id_selector)
+            elem.InitStyles(styles)
+            self._uisl_elements[id_selector] = elem
  
-    def _MergeParsedStyles(self, _id, styles):
-        """ Merge new styles and the current styles dicts.
-        
-        :param str _id: element id to merge styles for
-        :param str styles: new styles to merge with the current styles
-        """
-        # Make a copy so that we don't overwrite
-        styles_dict = copy.copy(self.current_styles[_id])
-
-        # Merge the UI Style Lang properties. Any styles that are not 
-        # specified will automatically be the default ones.
-        for prop in styles:
-            styles_dict[prop] = styles[prop]
-
-        # At this point, set the current styles to be the new styles 
-        self.current_styles[_id] = styles_dict
-        return styles_dict
-    
     def GetRawStyleSheet(self):
-        return self.raw_stylesheet
-
-    def GetLangParser(self):
-        return self.lang_parser
-
-    def GetWXId(self, _id, style_type="shape"):
-        """ Returns the assigned wxPython id of the element. Useful for situations when you need to mess with the wxPython ids yourself.
-
-        :param str _id: id to of the element (must be already declared in the intial stylesheet)
-        :param str style_type: type of the element - can be one of: text, image, shape
-        :returns: `wx.IdRef`
-        """
-        if style_type == "text":
-            id_obj = self.sdc_text_style_ids[_id]
-        elif style_type == "image":
-            id_obj = self.sdc_image_style_ids[_id]
-        else:
-            id_obj = self.sdc_shape_style_ids[_id]
-
-        return id_obj.GetWxId()
-
-
-    def GetWXRect(self, _id, style_type="shape"):
-        """ Get the wxPython Rect of the element.
-
-        :param str _id: id to of the element (must be already declared in the intial stylesheet)
-        :param str style_type: type of the element - can be one of: text, image, shape
-        :returns: `wx.Rect`
-        """
-        if style_type == "text":
-            id_obj = self.sdc_text_style_ids[_id]
-        elif style_type == "image":
-            id_obj = self.sdc_image_style_ids[_id]
-        else:
-            id_obj = self.sdc_shape_style_ids[_id]
-
-        return id_obj.GetRect()
+        return self._raw_stylesheet
 
     @property
     def ParsedStyles(self):
-        styles = self.lang_parser.parse()
-        return styles
+        return self._parsed_styles_data
+
+    @property
+    def LangParser(self):
+        return self._lang_parser
 
     def CleanProperty(self, prop):
-        return self.lang_parser.clean_property(prop)
+        return self.LangParser.clean_property(prop)
 
 
-    def InitShapeStyles(self, _id):
-        """ Draws the shape with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: 
-        
-        ```<div class="{{_id}}"></div>```
+    def GetWxRect(self, elem_id):
+        """ Get the wxPython Rect of the element.
 
-        :param str _id: id to draw (must be already declared in the intial stylesheet)
+        :param str elem_id: id to of the element (must be already declared in the intial stylesheet)
+        :returns: `wx.Rect`
         """
-        styles = self.ParsedStyles[_id]
-        style_id_obj = self.sdc_shape_style_ids[_id]
-        self.UpdateShape(style_id_obj.GetWxId(), style_id_obj, styles)
+        elem = self._uisl_elements[elem_id]
 
+        return elem.GetRect()
 
-    def InitTextStyles(self, _id, text=""):
-        """ Draws the text with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: 
-        
-        ``<p class="{{_id}}">{{text}}</p>``
+    def GetWxId(self, elem_id):
+        """ Returns the assigned wxPython id of the element. Useful for situations when you need to mess with the wxPython ids yourself.
 
-        :param str _id: id to draw (must be already declared in the intial stylesheet)
-        :param str text: text to be drawn and displayed
+        :param str elem_id: id to of the element (must be already declared in the intial stylesheet)
+        :returns: `wx.IdRef`
         """
-        styles = self.ParsedStyles[_id]
-        style_id_obj = self.sdc_text_style_ids[_id]
-        style_id_obj.SetText(text)
-        self.UpdateText(style_id_obj.GetWxId(), text, styles)
+        elem = self._uisl_elements[elem_id]
 
+        return elem.GetWxId()
 
-    def InitImageStyles(self, _id, img_path=""):
-        """ Draws the image with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: 
-        
-        ``<img class="{{_id}}" src="{{img_path}}">``
+    def DrawElem(self, elem_id, pseudo_id):
+        elem = self._uisl_elements[elem_id]
+        wx_id = elem.GetWxId()
 
-        :param str _id: id to draw (must be already declared in the intial stylesheet)
-        :param str img_path: path of the image to be drawn and displayed
-        """
-        styles = self.ParsedStyles[_id]
-        style_id_obj = self.sdc_image_style_ids[_id]
-        style_id_obj.SetPath(img_path)
-        self.UpdateImage(style_id_obj.GetWxId(), img_path, styles)
+        self.ClearId(wx_id)
+        self.SetId(wx_id)
 
+        #print(elem.GetStyles(pseudo_id))
 
-    def UpdateShape(self, _id, id_obj, styles):
-        self.ClearId(_id)
-        self.SetId(_id)
+        try:
+            styles_dict = copy.copy(elem.GetStyles(pseudo_id))
+        except KeyError:
+            raise RuntimeError("Invalid psuedo selector, '{}'".format(pseudo_id))
 
-        styles_dict = self._MergeParsedStyles(_id, styles)
+        elem_type = elem.GetType()
+        elem_content = elem.GetContent()
+
+        # Clean property values
+        for prop in styles_dict:
+            styles_dict[prop] = self.CleanProperty(styles_dict[prop])
 
         # Define styles 
-        uiss_background_color = self.CleanProperty(styles_dict["background-color"]) 
-
-        uiss_border_radius = self.CleanProperty(styles_dict["border-radius"]) 
-        uiss_border_width = self.CleanProperty(styles_dict["border-width"]) 
-        uiss_border_color = self.CleanProperty(styles_dict["border-color"]) 
-
-        uiss_top = self.CleanProperty(styles_dict["top"]) 
-        uiss_left = self.CleanProperty(styles_dict["left"]) 
-        uiss_width = self.CleanProperty(styles_dict["width"]) 
-        uiss_height = self.CleanProperty(styles_dict["height"]) 
+        uiss_background_color = styles_dict["background-color"] 
+        uiss_color = styles_dict["color"] 
+        uiss_background = styles_dict["background"] 
+        uiss_border_radius = styles_dict["border-radius"] 
+        uiss_border_width = styles_dict["border-width"]
+        uiss_border_color = styles_dict["border-color"]
+        uiss_top = styles_dict["top"]
+        uiss_left = styles_dict["left"]
+        uiss_width = styles_dict["width"] 
+        uiss_height = styles_dict["height"] 
+        uiss_text_decoration = styles_dict["text-decoration"]
+        uiss_font_weight = styles_dict["font-weight"]
+        uiss_font_style = styles_dict["font-style"]
+        uiss_font_size = styles_dict["font-size"]
+        uiss_transform_rotate = styles_dict["transform-rotate"]
+        uiss_text_transform = styles_dict["text-transform"] 
 
         # Set the rect of the element
-        id_obj.SetRect(wx.Rect(uiss_left, uiss_top, uiss_width, uiss_height))
+        elem.SetRect(wx.Rect(uiss_left, uiss_top, uiss_width, uiss_height))
 
-        # Use styles
-        self.SetPen(wx.Pen(wx.Colour(uiss_border_color), uiss_border_width))
-        self.SetBrush(wx.Brush(wx.Colour(uiss_background_color), wx.SOLID))
+        # Draw
+        if elem_type == "SHAPE":
 
-        if uiss_border_radius > 0:
-            if uiss_width == uiss_height and uiss_border_radius == uiss_height/2:
-                # Correct the coordinates so that the circle's "corner" is 
-                # placed at the uiss_top and uiss_left position
-                half = uiss_width/2
-                self.DrawCircle(uiss_left+half, uiss_top+half, uiss_border_radius)
+            # Use styles
+            self.SetPen(wx.Pen(wx.Colour(uiss_border_color), uiss_border_width))
+            self.SetBrush(wx.Brush(wx.Colour(uiss_background_color), wx.SOLID))
+
+            if uiss_border_radius > 0:
+                if uiss_width == uiss_height and uiss_border_radius == uiss_height/2:
+                    # Correct the coordinates so that the circle's "corner" is 
+                    # placed at the uiss_top and uiss_left position
+                    half = uiss_width/2
+                    self.DrawCircle(uiss_left+half, uiss_top+half, uiss_border_radius)
+                else:
+                    self.DrawRoundedRectangle(
+                        uiss_left, uiss_top, uiss_width, uiss_height, uiss_border_radius
+                        )
             else:
-                self.DrawRoundedRectangle(
-                    uiss_left, uiss_top, uiss_width, uiss_height, uiss_border_radius
+                self.DrawRectangle(uiss_left, uiss_top, uiss_width, uiss_height)
+
+
+        elif elem_type == "TEXT":
+            text = elem_content
+
+            # Use styles
+            fnt = self._parent_window.GetFont()
+
+            # Text decoration
+            if uiss_text_decoration == "underline":
+                fnt.MakeUnderlined()
+
+            # Font size
+            if uiss_font_size == "medium":
+                pass
+
+            elif uiss_font_size == "smaller":
+                fnt.MakeSmaller()
+
+            elif uiss_font_size == "larger":
+                fnt.MakeLarger()
+
+            # Font weight
+            if uiss_font_weight in ["normal", "400"]:
+                fnt.SetWeight(wx.FONTWEIGHT_NORMAL)
+
+            elif uiss_font_weight in ["bold", "700"]:
+                fnt.SetWeight(wx.FONTWEIGHT_BOLD)
+
+            elif uiss_font_weight == "100":
+                fnt.SetWeight(wx.FONTWEIGHT_THIN)
+
+            elif uiss_font_weight == "200":
+                fnt.SetWeight(wx.FONTWEIGHT_EXTRALIGHT)
+
+            elif uiss_font_weight == "300":
+                fnt.SetWeight(wx.FONTWEIGHT_LIGHT)
+
+            elif uiss_font_weight == "500":
+                fnt.SetWeight(wx.FONTWEIGHT_MEDIUM)
+
+            elif uiss_font_weight == "600":
+                fnt.SetWeight(wx.FONTWEIGHT_SEMIBOLD)
+
+            elif uiss_font_weight == "800":
+                fnt.SetWeight(wx.FONTWEIGHT_EXTRABOLD)
+
+            elif uiss_font_weight == "900":
+                fnt.SetWeight(wx.FONTWEIGHT_HEAVY)
+
+            elif uiss_font_weight == "1000":
+                fnt.SetWeight(wx.FONTWEIGHT_EXTRAHEAVY)
+
+            # Font style
+            if uiss_font_style == "normal":
+                fnt.SetStyle(wx.FONTSTYLE_NORMAL)
+
+            elif uiss_font_style == "italic":
+                fnt.SetStyle(wx.FONTSTYLE_ITALIC)
+
+            self.SetFont(fnt)
+            self.SetTextForeground(wx.Colour(uiss_color))
+            self.SetTextBackground(wx.Colour(uiss_background))
+
+            # Text transform
+            if uiss_text_transform == "none":
+                text = text # Do nothing
+
+            if uiss_text_transform == "lowercase":
+                text = text.lower()
+
+            elif uiss_text_transform == "uppercase":
+                text = text.upper()
+
+            elif uiss_text_transform == "capitalize":
+                text = text.capitalize()
+            
+
+            if uiss_transform_rotate == 0:
+                self.DrawText(text, uiss_left, uiss_top)
+            else:
+                self.DrawRotatedText(text, uiss_left, uiss_top, uiss_transform_rotate)
+
+
+        elif elem_type == "IMAGE":
+            img_path = elem_content
+            image = wx.Image(img_path)
+
+            #if uiss_height != 0 and uiss_width != 0:
+            #img_center = wx.Point(uiss_left+(image.GetWidth()/2), uiss_top+(image.GetHeight()/2))
+            #print(img_center)
+    
+            if uiss_transform_rotate > 0:
+
+                image = wx.Image.Rotate(
+                    image, uiss_transform_rotate, wx.Point(uiss_left, uiss_top)
                     )
 
-        else:
-            self.DrawRectangle(uiss_left, uiss_top, uiss_width, uiss_height)
+            bitmap = wx.Image.ConvertToBitmap(image)
+
+            self.DrawBitmap(bitmap, uiss_left, uiss_top, True)
 
 
-    def UpdateText(self, _id, text, styles):
-
-        self.ClearId(_id)
-        self.SetId(_id)
-
-        styles_dict = self._MergeParsedStyles(_id, styles)
-
-        # Define styles
-        uiss_color = self.CleanProperty(styles_dict["color"]) 
-        uiss_background = self.CleanProperty(styles_dict["background"]) 
-        uiss_text_decoration = self.CleanProperty(styles_dict["text-decoration"])
-
-        uiss_top = self.CleanProperty(styles_dict["top"]) 
-        uiss_left = self.CleanProperty(styles_dict["left"]) 
-
-        uiss_font_weight = self.CleanProperty(styles_dict["font-weight"]) 
-        uiss_font_style = self.CleanProperty(styles_dict["font-style"]) 
-        uiss_font_size = self.CleanProperty(styles_dict["font-size"])
-
-        uiss_transform_rotate = self.CleanProperty(styles_dict["transform-rotate"])
-        uiss_text_transform = self.CleanProperty(styles_dict["text-transform"]) 
+    def InitElem(self, id_statement, type_hint="SHAPE", content=""):
+        ids = self.LangParser.get_statement_ids(id_statement)
+        elem = self._uisl_elements[ids[0]]
+        elem.SetType(type_hint)
+        elem.SetContent(content)
+        self.DrawElem(ids[0], ids[1])
 
 
-        # Use styles
-        fnt = self.parent_window.GetFont()
-
-        # Text decoration
-        if uiss_text_decoration == "underline":
-            fnt.MakeUnderlined()
-
-        # Font size
-        if uiss_font_size == "medium":
-            pass
-
-        elif uiss_font_size == "smaller":
-            fnt.MakeSmaller()
-
-        elif uiss_font_size == "larger":
-            fnt.MakeLarger()
-
-        # Font weight
-        if uiss_font_weight in ["normal", "400"]:
-            fnt.SetWeight(wx.FONTWEIGHT_NORMAL)
-
-        elif uiss_font_weight in ["bold", "700"]:
-            fnt.SetWeight(wx.FONTWEIGHT_BOLD)
-
-        elif uiss_font_weight == "100":
-            fnt.SetWeight(wx.FONTWEIGHT_THIN)
-
-        elif uiss_font_weight == "200":
-            fnt.SetWeight(wx.FONTWEIGHT_EXTRALIGHT)
-
-        elif uiss_font_weight == "300":
-            fnt.SetWeight(wx.FONTWEIGHT_LIGHT)
-
-        elif uiss_font_weight == "500":
-            fnt.SetWeight(wx.FONTWEIGHT_MEDIUM)
-
-        elif uiss_font_weight == "600":
-            fnt.SetWeight(wx.FONTWEIGHT_SEMIBOLD)
-
-        elif uiss_font_weight == "800":
-            fnt.SetWeight(wx.FONTWEIGHT_EXTRABOLD)
-
-        elif uiss_font_weight == "900":
-            fnt.SetWeight(wx.FONTWEIGHT_HEAVY)
-
-        elif uiss_font_weight == "1000":
-            fnt.SetWeight(wx.FONTWEIGHT_EXTRAHEAVY)
-
-        # Font style
-        if uiss_font_style == "normal":
-            fnt.SetStyle(wx.FONTSTYLE_NORMAL)
-
-        elif uiss_font_style == "italic":
-            fnt.SetStyle(wx.FONTSTYLE_ITALIC)
-
-        self.SetFont(fnt)
-        self.SetTextForeground(wx.Colour(uiss_color))
-        self.SetTextBackground(wx.Colour(uiss_background))
-
-        # Text transform
-        if uiss_text_transform == "none":
-            text = text # Do nothing
-
-        if uiss_text_transform == "lowercase":
-            text = text.lower()
-
-        elif uiss_text_transform == "uppercase":
-            text = text.upper()
-
-        elif uiss_text_transform == "capitalize":
-            text = text.capitalize()
-
-        if uiss_transform_rotate == 0:
-            self.DrawText(text, uiss_left, uiss_top)
-        else:
-            self.DrawRotatedText(text, uiss_left, uiss_top, uiss_transform_rotate)
-            
-
-    def UpdateImage(self, _id, img_path, styles):
-        self.ClearId(_id)
-        self.SetId(_id)
-
-        styles_dict = self._MergeParsedStyles(_id, styles)
-
-        # Define styles 
-        uiss_top = self.CleanProperty(styles_dict["top"]) 
-        uiss_left = self.CleanProperty(styles_dict["left"]) 
-        #uiss_width = self.CleanProperty(styles_dict["width"]) 
-        #uiss_height = self.CleanProperty(styles_dict["height"]) 
-
-        uiss_transform_rotate = self.CleanProperty(styles_dict["transform-rotate"])
-
-        # Use styles
-        image = wx.Image(img_path)
-
-        #if uiss_height != 0 and uiss_width != 0:
-        #img_center = wx.Point(uiss_left+(image.GetWidth()/2), uiss_top+(image.GetHeight()/2))
-        #print(img_center)
- 
-        if uiss_transform_rotate > 0:
-            #print(uiss_transform_rotate)
-
-            # There could be a bug with this code since it doesn't seem to have
-            # the correct rotation all the time.
-            image = wx.Image.Rotate(
-                image, uiss_transform_rotate, wx.Point(uiss_left, uiss_top)
-                )
-
-        bitmap = wx.Image.ConvertToBitmap(image)
-
-        self.DrawBitmap(bitmap, uiss_left, uiss_top, True)
-
-
-    def UpdateShapeStyles(self, _id, styles=""):
-        """ Updates and draws the shape with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: 
-        
-        ``<div class="{{_id}}" style="{{styles}}"></div>``
-
-        :param str _id: id to draw (must be already declared in the intial stylesheet)
-        :param str styles: inline styles to update and override style properties of the shape
-        """
-        style_id_obj = self.sdc_shape_style_ids[_id]
-        #print(style_id_obj.GetId())
-        uiss_style = self.lang_parser.parse_inline(styles)
-        self.UpdateShape(style_id_obj.GetWxId(), style_id_obj, uiss_style)
-
-
-    def UpdateTextStyles(self, _id, text="", styles=""):
-        """ Updates and draws the text with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: 
-        
-        ``<p class="{{_id}}" style="{{styles}}">{{text}}</p>``
-
-        :param str _id: id to draw (must be already declared in the intial stylesheet)
-        :param str text: update and override the text to be drawn and displayed
-        :param str styles: inline styles to update and override style properties of the text
-        """
-        style_id_obj = self.sdc_text_style_ids[_id]
-        #print(style_id_obj.GetId())
-        uiss_style = self.lang_parser.parse_inline(styles)
-
-        if text == "":
-            text = style_id_obj.GetText()
-        else:
-            style_id_obj.SetText(text)
-            
-        self.UpdateText(style_id_obj.GetWxId(), text, uiss_style)
-
-
-    def UpdateImageStyles(self, _id, img_path="", styles=""):
-        """ Updates and draws the image with the same id declared in the stylesheet. This can be thought of like the following pseudo-HTML: 
-        
-        ``<img class="{{_id}}" src="{{img_path}}" style="{{styles}}">``
-
-        :param str _id: id to draw (must be already declared in the intial stylesheet)
-        :param str img_path: update and override the image path to be drawn and displayed
-        :param str styles: inline styles to update and override style properties of the image
-        """
-        style_id_obj = self.sdc_image_style_ids[_id]
-        #print(style_id_obj.GetId())
-        uiss_style = self.lang_parser.parse_inline(styles)
-
-        if img_path == "":
-            img_path = style_id_obj.GetPath()
-        else:
-            style_id_obj.SetPath(img_path)
-            
-        self.UpdateImage(style_id_obj.GetWxId(), img_path, uiss_style)
+    def UpdateElem(self, id_statement, content="", styles=""):
+        ids = self.LangParser.get_statement_ids(id_statement)
+        new_styles = self.LangParser.parse_inline(styles)
+        #print("\n style ", new_styles)
+        elem = self._uisl_elements[ids[0]]
+        elem.SetContent(content)
+        elem.MergeStyles(ids[1], new_styles)
+        self.DrawElem(ids[0], ids[1])
