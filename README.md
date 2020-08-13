@@ -1,39 +1,23 @@
 UI Style Lang (Language)
 ========================
 
-!["UI Style Lang"](https://github.com/Correct-Syntax/ui-style-lang/blob/master/logo.png?raw=true "UI Style Lang")
+!["UI Style Lang"](https://github.com/Correct-Syntax/ui-style-lang/blob/master/assets/logo.png?raw=true "UI Style Lang")
 
 
 UI Style Lang is a simple CSS-like language which allows for drawing and styling wxPython elements. Many UI Style Lang properties are the same as the normal (not short-hand) CSS3 properties. This provides a familiar syntax, especially for those with experience with CSS3.
 
-Stylesheet example:
+If you are looking for an easy way to:
 
-```
-@style my-element {
-  border-radius: 15px;
-  width: 20px;
-  height 30px;
-  top: 20px;
-  left: 500px;
-  border-width: 2px;
-  background-color: blue;
-  border-color: #444;
-}
-```
+* **Draw shapes, text and/or images** in wxPython without worrying so much about ids, brushes, pens, etc.
+* **Style the native wxPython widgets** from a stylesheet
+* **Create your own custom widgets in wxPython** that can be styled with a CSS-like stylesheet
 
-Python example:
-
-```python
-
-dc.InitShapeStyle("my-element")
-
-```
+...then UI Style Lang is likely the module you're looking for.
 
 
 # WIP/ TODO
 
-* SVG support(?).
-* More widget styling support
+* SVG support(?)
 
 # Features
 
@@ -43,22 +27,67 @@ dc.InitShapeStyle("my-element")
     * Includes the ``UIStylePDC`` UI Style Lang class which is a powerful extension of the wxPython ``wx.PseudoDC``
     * Over 15 stylesheet properties already supported
     * Draw circles, rectangles, squares, images, & text
-    * Translate & rotate objects
+    * Translate & rotate elements
     * Load styles from inline styles and an external stylesheet
-    * Auto-handles IDs, with support for manual-handling of IDs
+    * Auto-handles wxPython IDs, with support for manual-handling of IDs
 
-* **Widget Styling API**
+* **Native Widget Styling API**
     * Supports loading from a stylesheet for easy theming
-    * Support for styling app, panels, frames background color (currently)
+    * Support for styling app, panels, frames and static text widgets
 
+...and more.
+
+# Usage and Examples
+
+See the [docs](https://github.com/Correct-Syntax/ui-style-lang/tree/master/docs) and [full demo examples](https://github.com/Correct-Syntax/ui-style-lang/tree/master/demo) for information on usage...
+
+
+# What does the syntax look like?
+
+UI Style Lang (Stylesheet API) example:
+
+```
+/* My custom button styles */
+@style button {
+  background-color: #F4F4F4;
+  top: 20px;
+  left: 40px;
+  width: 115px;
+  height: 35px;
+  border-color: #D1D1D1;
+  border-size: 2px;
+}
+
+@style button:hover {
+  background-color: #FDFDFD;
+  top: 20px;
+  left: 40px;
+  width: 115px;
+  height: 35px;
+  border-color: #D1D1D1;
+  border-size: 2px;
+}
+```
+
+Python API example:
+
+```python
+
+# Intilizing the element: <div id="button"></div>
+>> dc.InitElem("button")
+
+# Editing the style with inline styles: <div id="button" style="border-color: red; border-width: 4px;"></div>
+>> dc.UpdateElem('button', styles="border-color: red; border-width: 4px;")
+
+# Update the element with the 'hover' styles: <div id="button" class="hover"></div>
+>> dc.UpdateElem('button:hover')
+
+```
 
 # Development 
 
 Pull requests and/or feature suggestions are welcome!
 
-# Usage
-
-See the [docs](https://github.com/Correct-Syntax/ui-style-lang/tree/master/docs) and [full demos](https://github.com/Correct-Syntax/ui-style-lang/tree/master/demo) for information on usage...
 
 # License
 
