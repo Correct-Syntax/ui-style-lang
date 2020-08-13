@@ -336,11 +336,23 @@ The ``UIStylePDC`` class is an enhanced wrapper for the ``wx.adv.PseudoDC``, mak
 
 .. autoclass:: uistylelang.UIStylePDC
 
-.. automethod:: uistylelang.UIStylePDC.GetWXId
-.. automethod:: uistylelang.UIStylePDC.GetWXRect
-.. automethod:: uistylelang.UIStylePDC.InitShapeStyles
-.. automethod:: uistylelang.UIStylePDC.InitTextStyles
-.. automethod:: uistylelang.UIStylePDC.InitImageStyles
-.. automethod:: uistylelang.UIStylePDC.UpdateTextStyles
-.. automethod:: uistylelang.UIStylePDC.UpdateShapeStyles
-.. automethod:: uistylelang.UIStylePDC.UpdateImageStyles
+.. automethod:: uistylelang.UIStylePDC.GetWxId
+.. automethod:: uistylelang.UIStylePDC.GetWxRect
+.. automethod:: uistylelang.UIStylePDC.InitElem
+
+.. warning::
+
+   Content as defined by the ``content`` variable is shared between all pseudo-id selectors. This means that an element with ``content`` will still be the same no matter which pseudo selector for that element you use.
+
+   For example:
+
+   .. code-block::
+
+         >> dc.InitElem('my-elem', "TEXT", "This is the text to be displayed") # Initial
+         ...
+         >> dc.UpdateElem('my-elem:active', content="This is the updated text", styles="color: red;") # Updated
+         ...
+         >> dc.UpdateElem('my-elem:active') # content will be "This is the updated text"
+         >> dc.UpdateElem('my-elem:hover') # content will also be "This is the updated text"
+
+.. automethod:: uistylelang.UIStylePDC.UpdateElem
