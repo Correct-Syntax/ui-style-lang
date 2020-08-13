@@ -57,8 +57,8 @@ def MergeParsedStyles(_id, styles, current_styles):
 
     # Merge the UI Style Lang properties. Any styles that are not 
     # specified will automatically be the default ones.
-    for prop in styles[_id]:
-        styles_dict[prop] = styles[_id][prop]
+    for prop in styles[_id]["init"]:
+        styles_dict[prop] = styles[_id]["init"][prop]
 
     # At this point, set the current styles to be the new styles 
     current_styles[_id] = styles_dict
