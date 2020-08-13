@@ -2,7 +2,9 @@
 UI Style Lang API
 =================
 
-UI Style Lang is a simple CSS-like language which allows for drawing and styling wxPython elements. Many UI Style Lang properties are the same as the normal (not short-hand) CSS3 properties. This provides a familiar syntax, especially for those with experience with CSS3.
+UI Style Lang is a simple CSS-like language which allows for drawing and styling wxPython elements. Many UI Style Lang properties are the same as the normal (non short-hand) CSS3 properties. This provides a familiar syntax, especially for those with experience with CSS3.
+
+It also has a Python API which can be thought of like what HTML+JS is to CSS.
 
 
 Style Sheet API
@@ -11,7 +13,7 @@ Style Sheet API
 The UI Style Lang language is declared in a .uiss or .css file. It has a simple, CSS3-like syntax and an id based structure.
 
 .. note::
-   It should be noted that not all of the properties supported in the drawing API are supported by the API for styling elements. Thus, the drawing API is much more powerful (at the moment, at least) and the usage will differ greatly.
+   It should be noted that not all of the properties supported in the Drawing API are supported by the Native Widget API for styling elements. Thus, the Drawing API is much more powerful (at the moment, at least) and the usage will differ greatly.
 
 Basic Syntax Rules
 ^^^^^^^^^^^^^^^^^^
@@ -395,7 +397,7 @@ Specifies the decoration added to the text
 Python API
 ==========
 
-The "HTML equivelent" in UI Style Lang is the Python method API. The HTML + CSS feel is most pronounced in the ``UIStylePDC`` drawing API.
+The "HTML equivelent" in UI Style Lang is the Python method API. The HTML + CSS feel is most pronounced in the ``UIStylePDC`` Drawing API.
 
 Drawing API
 ^^^^^^^^^^^
@@ -410,10 +412,8 @@ The ``UIStylePDC`` class is an enhanced wrapper for the ``wx.adv.PseudoDC``, mak
 .. note::
    The normal methods from the ``wx.adv.PseudoDC`` are still accessible from ``UIStylePDC``. 
 
-
 .. py:module:: uistylelang.context.UIStylePDC
 .. py:currentmodule:: uistylelang.context.UIStylePDC
-
 
 .. autoclass:: uistylelang.UIStylePDC
 
@@ -423,7 +423,7 @@ The ``UIStylePDC`` class is an enhanced wrapper for the ``wx.adv.PseudoDC``, mak
 
 .. warning::
 
-   Content as defined by the ``content`` variable is shared between all pseudo-id selectors. This means that an element with ``content`` will still be the same no matter which pseudo selector for that element you use.
+   Content as defined by the ``content`` variable is shared between ALL pseudo-id selectors. This means that an element with ``content`` will still be the same no matter which pseudo selector for that element you use.
 
    For example:
 
@@ -436,4 +436,59 @@ The ``UIStylePDC`` class is an enhanced wrapper for the ``wx.adv.PseudoDC``, mak
          >> dc.UpdateElem('my-elem:active') # content will be "This is the updated text"
          >> dc.UpdateElem('my-elem:hover') # content will also be "This is the updated text"
 
+   This may change in the future, but keep this in mind when updating an element's content.
+
 .. automethod:: uistylelang.UIStylePDC.UpdateElem
+
+
+Native Widget API
+^^^^^^^^^^^^^^^^^
+
+.. note::
+
+   The Native Widget API can be used *with* or *without* the Drawing API and vice-versa. UI Style Lang does not force usage of both as the same time.
+
+The Native Widget API is an abstraction of a few of the native wxPython widgets. The widgets here are implemented as an enhanced wrappers of the corresponding widget to allow for styling (if the platform supports it). 
+
+Widgets are styled using the ``name`` parameter as the *id selector*.
+
+Example:
+
+.. code-block::
+
+   # In the stylesheet.uiss file
+   @style main-panel {
+     background-color: #444;
+   }
+
+.. code-block::
+
+   # In the Python file
+   app = UIStyleApp(file="stylesheet.uiss")
+
+   ...
+   
+   pnl = UIStylePanel(frm,
+                     name="main-panel"
+                     )
+  
+
+UIStyleApp
+----------
+
+.. autoclass:: uistylelang.UIStyleApp
+
+UIStyleFrame
+------------
+
+.. autoclass:: uistylelang.UIStyleFrame
+
+UIStylePanel
+------------
+
+.. autoclass:: uistylelang.UIStylePanel
+
+UIStyleStaticText
+-----------------
+
+.. autoclass:: uistylelang.UIStyleStaticText
