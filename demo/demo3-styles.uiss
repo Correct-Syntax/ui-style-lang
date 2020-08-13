@@ -1,10 +1,11 @@
 
 
-
+ 
 @style main-frame {
-  background-color: white;
+  background-color: red;
 }
 
+/* button */
 @style button {
   background-color: #F4F4F4;
   top: 20px;
@@ -15,20 +16,40 @@
   border-size: 2px;
 }
 
-@style button-- {
-  background-color: #F4F4F4;
+@style button:hover {
+  background-color: #FDFDFD;
   top: 20px;
   left: 40px;
-  width: 100px;
-  height: 30px;
+  width: 115px;
+  height: 35px;
   border-color: #D1D1D1;
   border-size: 2px;
 }
 
+@style button:press {
+  background-color: #D1D1D1;
+  top: 20px;
+  left: 40px;
+  width: 115px;
+  height: 35px;
+  border-color: #D1D1D1;
+  border-size: 2px;
+}
 
 @style button-text {
-  type: text;
   color: black;
   top: 30px;
+  left: 47px;
+}
+
+@style button-text:hover {
+  color: #444;
+  top: 30px;
+  left: 47px;
+}
+
+@style text {
+  color: green;
+  top: 300px;
   left: 47px;
 }

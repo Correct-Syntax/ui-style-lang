@@ -6,8 +6,7 @@
 # Usage:
 # It's a custom button...click it!
 
-# TODO:
-# Comments!!!
+# This demo is up-to-date
 
 
 import wx
@@ -22,7 +21,7 @@ class MainApplication(UIStyleFrame):
         # Create the DC
         self._pdc = UIStylePDC(
             self,
-            './demo3-styles.uiss'
+            './custom-widget-demo.uiss'
             ) 
 
         self.DrawDrawing(self._pdc)
@@ -48,38 +47,40 @@ class MainApplication(UIStyleFrame):
 
     def OnMotion(self, event):
         pnt = event.GetPosition()
-        elem_rect = self._pdc.GetWXRect('button')
+        elem_rect = self._pdc.GetWxRect('button')
         mouse_pnt = wx.Rect(pnt[0], pnt[1], 1, 1)
         
         if mouse_pnt.Intersects(elem_rect) == True:
-            self._pdc.UpdateShapeStyles('button', styles="background-color: #FDFDFD;")
+            self._pdc.UpdateElem('button:hover')
         else:
-            self._pdc.UpdateShapeStyles('button', styles="background-color: #F4F4F4;")
+            self._pdc.UpdateElem('button')
 
         self.RefreshDemo()
 
 
     def OnLeftDown(self, event):
         pnt = event.GetPosition()
-        elem_rect = self._pdc.GetWXRect('button')
+        elem_rect = self._pdc.GetWxRect('button')
 
         # Create a 1x1 rect for the mouse pointer
         mouse_pnt = wx.Rect(pnt[0], pnt[1], 1, 1) 
         
         if mouse_pnt.Intersects(elem_rect) == True:
-            self._pdc.UpdateShapeStyles('button', styles="background-color: #D1D1D1;")
+            self._pdc.UpdateElem('button:press')
+            self._pdc.UpdateElem('button-text:hover')
 
         self.RefreshDemo()
 
     def OnLeftUp(self, event):
         pnt = event.GetPosition()
-        elem_rect = self._pdc.GetWXRect('button')
+        elem_rect = self._pdc.GetWxRect('button')
 
         # Create a 1x1 rect for the mouse pointer
         mouse_pnt = wx.Rect(pnt[0], pnt[1], 1, 1) 
         
         if mouse_pnt.Intersects(elem_rect) == True:
-            self._pdc.UpdateShapeStyles('button', styles="background-color: #F4F4F4;")
+            self._pdc.UpdateElem('button')
+            self._pdc.UpdateElem('button-text')
             self.ButtonCallback()
             
         self.RefreshDemo()
@@ -87,8 +88,9 @@ class MainApplication(UIStyleFrame):
     def DrawDrawing(self, dc):
 
         # Initial
-        dc.InitShapeStyles('button')
-        dc.InitTextStyles('button-text', text="UI Style Lang Demo")
+        dc.InitElem('button')
+        dc.InitElem('button-text', "TEXT", "UI Style Lang Demo")
+        dc.InitElem('text', "TEXT", "UI Style Lang Demo")
 
 
     def RefreshDemo(self):
@@ -112,3 +114,4 @@ if __name__ == '__main__':
     frame.Show()
     app.SetTopWindow(frame)
     app.MainLoop()
+
