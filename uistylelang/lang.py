@@ -29,11 +29,28 @@ import re
 
 
 class UIStyleLangParser(object):
+    """ Core parser for the UI Style Lang stylesheet language. """
     def __init__(self, uislang_str):
         self.uistylelang_str = uislang_str
 
     def get_lang_string(self):
         return self.uistylelang_str
+
+    def get_statement_ids(self, statement):
+
+        if statement.rfind(":") == -1:
+            elem_id = statement
+            pseudo_id = "init" # Understood to be "init" by default
+        else:
+            style_ids = statement.rsplit(":")
+            elem_id = style_ids[0]
+            pseudo_id = style_ids[1]
+            
+            # Someone left a dangling colon... (e.g: 'my-elem: ')
+            if pseudo_id == "":
+                raise RuntimeError("Please set the pseudo selector for '{}' or remove the colon!".format(elem_id))
+
+        return [elem_id, pseudo_id]
 
     def remove_comments(self, input_text):
         """ Removes comments from the raw stylesheet.
@@ -54,14 +71,20 @@ class UIStyleLangParser(object):
 
             parsed_data = {
                 "rect (ID)": {
-                    "border-width (PROPERTY)": "1px (VALUE)",
-                    "border-color (PROPERTY)": "red (VALUE)",
+                    "init" :{
+                        "border-width (PROPERTY)": "1px (VALUE)",
+                        "border-color (PROPERTY)": "red (VALUE)",
+                    },
+                    "hover": {
+                        "border-width (PROPERTY)": "1px (VALUE)",
+                        "border-color (PROPERTY)": "red (VALUE)",
+                    }
                 }
             }
         """
         parsed_data = {}
 
-        if styles == "":
+        if inline == False:
             uiss_styles = self.remove_comments(self.get_lang_string())
         else:
             # We don't remove comments from inline styles -there shouldn't be any!
@@ -81,7 +104,10 @@ class UIStyleLangParser(object):
         tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
         line_num = 1
         line_start = 0
- 
+
+        last_id = None
+        new_block = True
+  
         for mo in re.finditer(tok_regex, uiss_styles):
             kind = mo.lastgroup
             value = mo.group()
@@ -98,17 +124,41 @@ class UIStyleLangParser(object):
 
             elif kind == "BEGIN":
                 pass
-
+ 
             elif kind == "ID":
                 if inline == False:
                     # Get the id
-                    style_id = value[7:]
+                    style_id_statement = value[7:]
+
+                    # Get the id and pseudo-id
+                    # ["example", "hover"]
+                    if style_id_statement.rfind(":") == -1:
+                        style_id = style_id_statement
+                        style_pseudo_id = "init" # Understood to be "init"
+                    else:
+                        style_ids = style_id_statement.rsplit(":")
+                        style_id = style_ids[0]
+                        style_pseudo_id = style_ids[1]
+
+                    current_block = [style_id, style_pseudo_id]
+
+                    if style_id != last_id:
+                        new_block = True
+                    if new_block == True:
+                        new_block = False
+                        last_id = style_id
+                        parsed_data[style_id] = {}
+
+
                     prop_dict = {} # inner properties
 
+
+ 
             elif kind == "PROPERTY":
                 if inline == False:
                     property_selector = value
                     prop_dict[str(property_selector)] = None
+
                 else:
                     property_selector = value
                     parsed_data[str(property_selector)] = None
@@ -123,12 +173,33 @@ class UIStyleLangParser(object):
 
             elif kind == "END":
                 if inline == False:
-                    parsed_data[style_id] = prop_dict
+                    #parsed_data[style_id] = prop_dict
+                    parsed_data[current_block[0]][current_block[1]] = prop_dict
+                    #parsed_data[current_block[0]]["elem_type"] = {}
+                    
 
             #print(kind, value, "\n")
 
-        #print(parsed_data, "<<<")
+        
+
+        #print(self.set_elem_types(parsed_data), " final")
         return parsed_data
+
+
+    #def set_elem_types(self, parsed_data):
+
+        # for elem_id in parsed_data:
+        #     for psuedo_id in parsed_data[elem_id]:
+        #         print(parsed_data[elem_id], "<<<")
+                
+        #         try:
+        #             parsed_data[elem_id]["elem_type"] = parsed_data[elem_id][psuedo_id]["type"]
+        #         except KeyError:
+        #             parsed_data[elem_id]["elem_type"] = "shape"
+
+        #         #del parsed_data[elem_id][psuedo_id]["type"]
+        
+        # return parsed_data
 
 
     def parse_inline(self, styles):
@@ -171,7 +242,7 @@ class UIStyleLangParser(object):
         return cleaned_uiss_prop
 
 
-
+  
 
 
 if __name__ == "__main__":
