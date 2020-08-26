@@ -39,7 +39,7 @@ If you are looking for an easy way to:
 
 # Usage and Examples
 
-See the [docs](https://github.com/Correct-Syntax/ui-style-lang/tree/master/docs) and [full demo examples](https://github.com/Correct-Syntax/ui-style-lang/tree/master/demo) for information on usage...
+See the [documentation](https://ui-style-lang.readthedocs.io/en/latest/) at Read the Docs and [full demo examples](https://github.com/Correct-Syntax/ui-style-lang/tree/master/demo) for information on usage...
 
 
 # What does the syntax look like?
