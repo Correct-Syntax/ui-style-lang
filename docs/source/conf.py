@@ -62,3 +62,5 @@ html_static_path = ['_static']
 # Logo
 html_favicon = "../../assets/icon.png"
 html_logo = "../../assets/logo.png"
+
+master_doc = "index"
