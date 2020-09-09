@@ -10,10 +10,40 @@ It also has a Python API which can be thought of like what HTML+JS is to CSS.
 Style Sheet API
 ===============
 
-The UI Style Lang language is declared in a .uiss or .css file. It has a simple, CSS3-like syntax and an id based structure.
+The UI Style Lang language can be declared in a .uiss or .css file or as a string. It has a simple, CSS3-like syntax and an id based structure.
 
 .. note::
    It should be noted that not all of the properties supported in the Drawing API are supported by the Native Widget API for styling elements. Thus, the Drawing API is much more powerful (at the moment, at least) and the usage will differ greatly.
+
+Loading Styles Via String
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Normally, UI Style Lang is declared in a .uiss or .css file. However, there are times when it is helpful to write the styles in a string directly in the python (.py) file.
+
+Comment-Header
+--------------
+
+A special comment-header is required when loading styles from a string. The comment-header is declared at the very top of the string as ``/* !uistylelangstr */``.
+
+Example
+-------
+
+.. code-block:: python
+
+   uiss_str = """
+   /* !uistylelangstr */
+   
+   .button {
+      background-color: white;
+   }
+   ...
+
+   """
+
+   # load just like you would a file
+
+.. versionadded:: 8.5
+
 
 Basic Syntax Rules
 ^^^^^^^^^^^^^^^^^^
@@ -427,7 +457,7 @@ The ``UIStylePDC`` class is an enhanced wrapper for the ``wx.adv.PseudoDC``, mak
 
    For example:
 
-   .. code-block::
+   .. code-block:: python
 
          >> dc.InitElem('my-elem', "TEXT", "This is the text to be displayed") # Initial
          ...
@@ -454,14 +484,14 @@ Widgets are styled using the ``name`` parameter as the *id selector*.
 
 Example:
 
-.. code-block::
+.. code-block:: css
 
    # In the stylesheet.uiss file
    @style main-panel {
      background-color: #444;
    }
 
-.. code-block::
+.. code-block:: python
 
    # In the Python file
    app = UIStyleApp(file="stylesheet.uiss")
