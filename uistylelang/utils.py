@@ -32,16 +32,39 @@ import copy
 
 
 def ReadRawFile(raw_file):
-    """ Reads the raw file from the system.
-    Supports .CSS and .UISS stylesheets
-    """
+    """ Reads the raw file from the system. If the comment-header is 
+    declared, the ``raw_file`` param will be treated as a string.
 
-    if raw_file.endswith(".css") or raw_file.endswith(".uiss"):
+    String example with comment-header:
+
+        /* !uistylelangstr */
+        
+        .button {
+          background-color: white;
+        }
+
+        ...
+
+    Supports .CSS and .UISS stylesheets
+    """ 
+    # Whether there is a line break before the 
+    # header or not we accept it.
+    if raw_file.startswith("/* !uistylelangstr */"): 
+        return raw_file
+    
+    elif raw_file.startswith("\n/* !uistylelangstr */"):
+        return raw_file
+
+    # Only accept .css or .uiss files
+    elif raw_file.endswith(".css") or raw_file.endswith(".uiss"):
         raw_text = open(raw_file, "r").read()
         return raw_text
 
     else:
-        msg = 'Invalid file type! Only .uiss and .css filetype extensions are supported.'
+        msg = """Invalid file type or string formatting!
+        Possible solutions:
+        1. Only .uiss and .css filetype extensions are supported.
+        2. String must start with the /* !uistylelangstr */ comment-header. """
         raise Exception(msg)
 
 
