@@ -4,7 +4,7 @@ from setuptools import setup
 setup(
   name = 'uistylelang',   
   packages = ['uistylelang'],   
-  version = '0.8.0',
+  version = '0.8.5',
   license='BSD 3-Clause',   
   description = 'Simple CSS-like language which allows for drawing and styling wxPython elements.',
   long_description=open('README.md').read(),
