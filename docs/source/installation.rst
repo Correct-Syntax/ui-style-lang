@@ -4,7 +4,7 @@ Installation
 
 UI Style Lang is a pure-Python package which can be installed via pip:
 
-.. code-block::
+.. code-block:: bash
 
     pip install -U uistylelang
 
