@@ -28,7 +28,7 @@ If you are looking for an easy way to:
     * Over 15 stylesheet properties already supported
     * Draw circles, rectangles, squares, images, & text
     * Translate & rotate elements
-    * Load styles from inline styles and an external stylesheet
+    * Load styles from inline styles, string and/or an external stylesheet
     * Auto-handles wxPython IDs, with support for manual-handling of IDs
 
 * **Native Widget Styling API**
