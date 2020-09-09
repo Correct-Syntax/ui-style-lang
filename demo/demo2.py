@@ -10,12 +10,33 @@
 import os
 import wx
 
-from uistylelang import UIStyleApp, UIStyleFrame, UIStylePanel
+from uistylelang import UIStyleApp, UIStyleFrame, UIStylePanel, UIStyleStaticText
+
+
+uiss_string = """
+/* !uistylelangstr */
+
+@style main-frame {
+  background-color: #444;
+}
+
+@style main-panel {
+  background-color: transparent;
+}
+
+@style static-text {
+  color: orange;
+  background-color: #fff;
+}
+
+"""
 
 
 if __name__ == '__main__':
     # Create the app via the special UIStyleApp class
-    app = UIStyleApp(file="demo-styles2.uiss")
+    app = UIStyleApp(file=uiss_string)
+    # Uncomment to load from stylesheet:
+    #app = UIStyleApp(file="demo-styles2.uiss")
 
     # Create the UIStyleFrame (Frame)
     frm = UIStyleFrame(None,
@@ -30,7 +51,7 @@ if __name__ == '__main__':
                        )
 
     # Labels
-    st = wx.StaticText(pnl, -1, 'Hello World!', (15,10))
+    st = UIStyleStaticText(pnl, -1, 'Hello World!', (15,10), name="static-text")
     st.SetFont(wx.FFont(14, wx.FONTFAMILY_SWISS, wx.FONTFLAG_BOLD))
 
     st = wx.StaticText(pnl, pos=(15,40),

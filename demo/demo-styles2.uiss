@@ -7,3 +7,8 @@
 @style main-panel {
   background-color: transparent;
 }
+
+@style static-text {
+  color: orange;
+  background-color: #fff;
+}
