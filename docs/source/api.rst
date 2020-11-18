@@ -32,7 +32,7 @@ Example
 
    uiss_str = """
    /* !uistylelangstr */
-   
+
    .button {
       background-color: white;
    }
@@ -111,7 +111,7 @@ Like *id selectors*, it can include alphabetical characters A-Z and numbers, sep
    }
 
 
-This is a very powerful feature of UI Style Lang as it allows you to declare style changes to your element in the stylesheet. 
+This is a very powerful feature of UI Style Lang as it allows you to declare style changes to your element in the stylesheet.
 
 It is useful especially for creating custom widgets where styles change depending on events as in this example:
 
@@ -196,7 +196,7 @@ UI Style Lang has support for single-line comments in the stylesheet. Multi-line
 Spacing
 -------
 
-UI Style Lang enforces proper spacing around ids and property values. 
+UI Style Lang enforces proper spacing around ids and property values.
 
 
 For example:
@@ -402,7 +402,7 @@ Sets how thick or thin characters in the text should be displayed
    :normal (default):
       Normal font weight
 
-   :bold: 
+   :bold:
       Bold font weight
 
    :100 200 300 400 500 600 700 800 900 1000:
@@ -437,10 +437,10 @@ The drawing API is an abstraction of wxPython DCs. ``UIStylePDC`` is implemented
 UIStylePDC
 ----------
 
-The ``UIStylePDC`` class is an enhanced wrapper for the ``wx.adv.PseudoDC``, making it possible to use UI Style Lang to draw on any ``wx.Window``. 
+The ``UIStylePDC`` class is an enhanced wrapper for the ``wx.adv.PseudoDC``, making it possible to use UI Style Lang to draw on any ``wx.Window``.
 
 .. note::
-   The normal methods from the ``wx.adv.PseudoDC`` are still accessible from ``UIStylePDC``. 
+   The normal methods from the ``wx.adv.PseudoDC`` are still accessible from ``UIStylePDC``.
 
 .. py:module:: uistylelang.context.UIStylePDC
 .. py:currentmodule:: uistylelang.context.UIStylePDC
@@ -478,13 +478,13 @@ Native Widget API
 
    The Native Widget API can be used *with* or *without* the Drawing API and vice-versa. UI Style Lang does not force usage of both as the same time.
 
-The Native Widget API is an abstraction of a few of the native wxPython widgets. The widgets here are implemented as an enhanced wrappers of the corresponding widget to allow for styling (if the platform supports it). 
+The Native Widget API is an abstraction of a few of the native wxPython widgets. The widgets here are implemented as an enhanced wrappers of the corresponding widget to allow for styling (if the platform supports it).
 
 Widgets are styled using the ``name`` parameter as the *id selector*.
 
 Example:
 
-.. code-block:: css
+.. code-block::
 
    # In the stylesheet.uiss file
    @style main-panel {
@@ -497,11 +497,11 @@ Example:
    app = UIStyleApp(file="stylesheet.uiss")
 
    ...
-   
+
    pnl = UIStylePanel(frm,
                      name="main-panel"
                      )
-  
+
 
 UIStyleApp
 ----------
