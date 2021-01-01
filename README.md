@@ -17,9 +17,18 @@ If you are looking for an easy way to:
 ...then UI Style Lang is likely the module you're looking for.
 
 
+# Direction of this project
+
+The direction of this project will mainly focus towards creating custom widgets which are styl-able via the UI Style Language. The aim is to imitate how (Qt Style Sheets) qss is to Qt except with wxPython custom-made widgets and UI Style Language.
+
+If you would like to help out or have ideas, feel free to open a Github issue or contact me directly via my email. :)
+
+
 # WIP/ TODO
 
+* Custom widgets (spinbox, slider, buttons, etc)
 * SVG support(?)
+
 
 # Features
 
@@ -38,6 +47,7 @@ If you are looking for an easy way to:
     * Support for styling app, panels, frames and static text widgets
 
 ...and more.
+
 
 # Usage and Examples
 
@@ -86,7 +96,7 @@ Python API example:
 
 ```
 
-# Development 
+# Development
 
 Pull requests and/or feature suggestions are welcome!
 
