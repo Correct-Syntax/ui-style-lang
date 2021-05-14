@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'UI Style Lang'
-copyright = '2020, Noah Rahm, Correct Syntax'
-author = 'Noah Rahm, Correct Syntax'
+copyright = '2020-2021, Noah Rahm'
+author = 'Noah Rahm'
 
 # The full version, including alpha/beta/rc tags
 release = '0.8.5'
