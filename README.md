@@ -20,7 +20,7 @@ This was originally created as a "scratch-an-itch" project to get an idea I had 
 
 ## Features
 
-* **Written in pure Python with minimal dependancies (just wxPython and the standard library)**
+* **Written in pure Python with just wxPython and the standard library**
 
 * **Drawing API**
     * Includes the ``UIStylePDC`` UI Style Lang class which is a powerful extension of the wxPython ``wx.PseudoDC``

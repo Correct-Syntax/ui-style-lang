@@ -1,4 +1,4 @@
-# UI Style Lang Copyright (c) 2020 Noah Rahm, Correct Syntax.
+# UI Style Lang Copyright 2020-2023 Noah Rahm
 
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
