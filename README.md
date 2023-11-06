@@ -1,8 +1,4 @@
-UI Style Lang (Language)
-========================
-
 !["UI Style Lang"](https://github.com/Correct-Syntax/ui-style-lang/blob/master/assets/logo.png?raw=true "UI Style Lang")
-
 
 [![Documentation Status](https://readthedocs.org/projects/ui-style-lang/badge/?version=latest)](https://ui-style-lang.readthedocs.io/en/latest/?badge=latest)
 
@@ -14,23 +10,15 @@ If you are looking for an easy way to:
 * **Style the native wxPython widgets** from a stylesheet
 * **Create your own custom widgets in wxPython** that can be styled with a CSS-like stylesheet
 
-...then UI Style Lang is likely the module you're looking for.
+then UI Style Lang is likely the module you're looking for.
 
 
-# Direction of this project
+## Background
 
-The direction of this project will mainly focus towards creating custom widgets which are styl-able via the UI Style Language. The aim is to imitate how (Qt Style Sheets) qss is to Qt except with wxPython custom-made widgets and UI Style Language.
-
-If you would like to help out or have ideas, feel free to open a Github issue or contact me directly via my email. :)
+This was originally created as a "scratch-an-itch" project to get an idea I had for using the wxPython drawing API in a CSS way out of my head. Whether or not this is a good idea I don't know, but it's fun creating it.
 
 
-# WIP/ TODO
-
-* Custom widgets (spinbox, slider, buttons, etc)
-* SVG support(?)
-
-
-# Features
+## Features
 
 * **Written in pure Python with minimal dependancies (just wxPython and the standard library)**
 
@@ -46,15 +34,15 @@ If you would like to help out or have ideas, feel free to open a Github issue or
     * Supports loading from a stylesheet for easy theming
     * Support for styling app, panels, frames and static text widgets
 
-...and more.
+and more.
 
 
-# Usage and Examples
+## Usage and Examples
 
-See the [documentation](https://ui-style-lang.readthedocs.io/en/latest/) at Read the Docs and [full demo examples](https://github.com/Correct-Syntax/ui-style-lang/tree/master/demo) for information on usage...
+See the [documentation](https://ui-style-lang.readthedocs.io/en/latest/) at Read the Docs and [full demo examples](https://github.com/Correct-Syntax/ui-style-lang/tree/master/demo) for information on usage.
 
 
-# What does the syntax look like?
+## What does the syntax look like?
 
 UI Style Lang (Stylesheet API) example:
 
@@ -96,11 +84,14 @@ Python API example:
 
 ```
 
-# Development
+
+## Contributing
+
+If you would like to help out or have ideas, feel free to open a Github issue.
 
 Pull requests and/or feature suggestions are welcome!
 
 
-# License
+## License
 
-UI Style Lang is licensed under the BSD 3-Clause license
+UI Style Lang is licensed under the BSD 3-Clause license.
