@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'UI Style Lang'
-copyright = '2020-2021, Noah Rahm'
+copyright = '2020-2023, Noah Rahm'
 author = 'Noah Rahm'
 
 # The full version, including alpha/beta/rc tags
@@ -61,6 +61,6 @@ html_static_path = ['_static']
 
 # Logo
 html_favicon = "../../assets/icon.png"
-html_logo = "../../assets/logo.png"
+html_logo = "../../assets/logo-no-bg.png"
 
 master_doc = "index"
